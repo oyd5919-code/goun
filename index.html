@@ -803,9 +803,9 @@ function scatterMemoryCards(pairs) {
     const arr = shuffle(pairs);
     let hasAdj = false;
     for (let i = 0; i < arr.length; i++) {
-      const r = Math.floor(i / 3), c = i % 3;
-      if (c < 2 && arr[i].key === arr[i + 1].key) { hasAdj = true; break; }
-      if (r < Math.floor(arr.length / 3) - 1 && arr[i].key === arr[i + 3].key) { hasAdj = true; break; }
+      const c = i % 3;
+      if (c < 2 && i + 1 < arr.length && arr[i].key === arr[i + 1].key) { hasAdj = true; break; }
+      if (i + 3 < arr.length && arr[i].key === arr[i + 3].key) { hasAdj = true; break; }
     }
     if (!hasAdj) return arr;
   }
