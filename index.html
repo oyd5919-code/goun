@@ -1047,6 +1047,24 @@ const SOLFEGE_ALL = ['도','레','미','파','솔','라','시'];
 const ALL_RHYTHM_NAMES = RHYTHM_ITEMS.map(i => i.name);
 const ALL_BEATS = ['4박자','3박자','2박자','1박자','반 박(0.5박)'];
 
+let roundWrongs = [];
+const STAGE_LABELS = {
+  rhythm: ['리듬 1단계(음표·쉼표)','리듬 2단계(이름)','리듬 3단계(박자)','리듬 4단계(종합)'],
+  pitch: ['계이름 1단계(도 자리)','계이름 2단계(높은음 기본)','계이름 3단계(위덧줄)','계이름 4단계(아래덧줄)','계이름 5단계(낮은음)','계이름 6단계(종합)'],
+  symbol: ['기호 1단계(연주·반복)','기호 2단계(셈여림)','기호 3단계(조성 ♯·♭)','기호 4단계(종합)']
+};
+function getStageLabel() {
+  return (STAGE_LABELS[currentGameType] && STAGE_LABELS[currentGameType][currentStageIdx]) || currentGameType;
+}
+function recordWrong(student, stageLabel, itemLabel, hint) {
+  const all = JSON.parse(localStorage.getItem('goun_wrongs') || '{}');
+  if (!all[student]) all[student] = {};
+  if (!all[student][stageLabel]) all[student][stageLabel] = {};
+  if (!all[student][stageLabel][itemLabel]) all[student][stageLabel][itemLabel] = { count: 0, hint };
+  all[student][stageLabel][itemLabel].count += 1;
+  localStorage.setItem('goun_wrongs', JSON.stringify(all));
+}
+
 function startQuiz(gameType, mode) {
   currentGameType = gameType;
   currentMode = mode;
@@ -1088,23 +1106,6 @@ function startQuiz(gameType, mode) {
     }
   }
 
-let roundWrongs = [];
-const STAGE_LABELS = {
-  rhythm: ['리듬 1단계(음표·쉼표)','리듬 2단계(이름)','리듬 3단계(박자)','리듬 4단계(종합)'],
-  pitch: ['계이름 1단계(도 자리)','계이름 2단계(높은음 기본)','계이름 3단계(위덧줄)','계이름 4단계(아래덧줄)','계이름 5단계(낮은음)','계이름 6단계(종합)'],
-  symbol: ['기호 1단계(연주·반복)','기호 2단계(셈여림)','기호 3단계(조성 ♯·♭)','기호 4단계(종합)']
-};
-function getStageLabel() {
-  return (STAGE_LABELS[currentGameType] && STAGE_LABELS[currentGameType][currentStageIdx]) || currentGameType;
-}
-function recordWrong(student, stageLabel, itemLabel, hint) {
-  const all = JSON.parse(localStorage.getItem('goun_wrongs') || '{}');
-  if (!all[student]) all[student] = {};
-  if (!all[student][stageLabel]) all[student][stageLabel] = {};
-  if (!all[student][stageLabel][itemLabel]) all[student][stageLabel][itemLabel] = { count: 0, hint };
-  all[student][stageLabel][itemLabel].count += 1;
-  localStorage.setItem('goun_wrongs', JSON.stringify(all));
-}
 
   qIndex = 0; score = 0; roundWrongs = [];
   showOnly('game-screen');
