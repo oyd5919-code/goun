@@ -272,7 +272,7 @@
     <h1 id="result-title">참 잘했어요!</h1>
     <p class="sub" id="result-desc"></p>
     <button class="next-btn" onclick="startGame(currentGameType, currentMode)">한 번 더 하기 🔁</button>
-    <button class="choice-btn" style="width:100%; margin-top:10px;" onclick="goHome()">단계 고르기로 가기</button>
+    <button class="choice-btn" id="result-home-btn" style="width:100%; margin-top:10px;" onclick="goHome()">단계 고르기로 가기</button>
   </div>
 </div>
 
@@ -637,7 +637,7 @@ function selectAnswer(btn, opt) {
   const cleanOpt = opt.replace(' 🎵', '').replace(' 🤫', '');
   const isRight = cleanOpt === q.correct;
 
-  document.querySelectorAll('.choice-btn').forEach(b => {
+  document.querySelectorAll('#choices .choice-btn').forEach(b => {
     b.disabled = true;
     const cleanB = b.textContent.replace(' 🎵', '').replace(' 🤫', '');
     if (cleanB === q.correct) b.classList.add('correct');
