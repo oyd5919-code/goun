@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>고운음악학원 · 음표·쉼표 리듬 게임</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; }
+  body {
+    background: linear-gradient(135deg, #fff6eb 0%, #ffe9f0 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 18px;
+    color: #2d2926;
+  }
+  .app {
+    background: #ffffff;
+    width: 100%;
+    max-width: 560px;
+    border-radius: 28px;
+    box-shadow: 0 14px 40px rgba(180, 120, 100, 0.16);
+    padding: 26px 22px 28px;
+    text-align: center;
+    border: 3px solid #ffe0cc;
+  }
+  .badge {
+    display: inline-block;
+    background: #fff1dc;
+    color: #b5651d;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 5px 14px;
+    border-radius: 99px;
+    margin-bottom: 8px;
+  }
+  h1 { font-size: 24px; margin-bottom: 6px; color: #2d2926; }
+  .sub { font-size: 14px; color: #7a7067; margin-bottom: 18px; }
+
+  .mode-grid {
+    display: grid;
+    gap: 12px;
+    margin-top: 10px;
+  }
+  .mode-btn {
+    border: 2.5px solid #f0dfd1;
+    background: #fffaf5;
+    border-radius: 20px;
+    padding: 16px 18px;
+    cursor: pointer;
+    text-align: left;
+    transition: transform 0.12s, border-color 0.15s, background 0.15s;
+  }
+  .mode-btn:hover { transform: translateY(-2px); border-color: #f39c6b; background: #fff3e8; }
+  .mode-title { font-size: 18px; font-weight: 800; color: #2d2926; margin-bottom: 3px; }
+  .mode-desc { font-size: 13px; color: #776c63; }
+
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .pill {
+    background: #f7f1eb;
+    padding: 6px 12px;
+    border-radius: 99px;
+    color: #5c5148;
+  }
+  .score-pill { background: #fff2cc; color: #9c6a00; }
+  .back-btn {
+    background: none;
+    border: none;
+    font-size: 14px;
+    color: #8b7e74;
+    cursor: pointer;
+    font-weight: 700;
+  }
+
+  .card-stage {
+    background: #fffcf7;
+    border: 2.5px solid #efe3d5;
+    border-radius: 22px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .q-prompt { font-size: 18px; font-weight: 800; margin-bottom: 10px; color: #3a312b; }
+  .svg-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 150px;
+  }
+  .sound-btn {
+    margin-top: 6px;
+    background: #eef6ff;
+    border: 1.5px solid #b9d7fa;
+    color: #2563eb;
+    border-radius: 99px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 11px;
+  }
+  .choices.single-row { grid-template-columns: 1fr 1fr; }
+  .choice-btn {
+    background: #ffffff;
+    border: 2.5px solid #e6dacd;
+    border-radius: 18px;
+    padding: 15px 10px;
+    font-size: 17px;
+    font-weight: 800;
+    color: #2d2926;
+    cursor: pointer;
+    transition: transform 0.1s, background 0.15s, border-color 0.15s;
+  }
+  .choice-btn:hover:not(:disabled) { background: #fff6ed; border-color: #f0a875; transform: scale(1.02); }
+  .choice-btn.correct { background: #dff7ea; border-color: #34a86e; color: #166534; }
+  .choice-btn.wrong { background: #ffe5e3; border-color: #e05a4f; color: #991b1b; }
+
+  .feedback {
+    min-height: 48px;
+    margin-top: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    border-radius: 14px;
+  }
+  .fb-ok { background: #eafaf1; color: #1f7a4c; }
+  .fb-no { background: #fff0ee; color: #c0392b; }
+
+  .next-btn {
+    margin-top: 12px;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 16px;
+    background: #ff8c5a;
+    color: white;
+    font-size: 17px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+  .next-btn:hover { background: #f27a46; }
+
+  .hidden { display: none; }
+  .trophy { font-size: 64px; margin: 10px 0; }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- HOME SCREEN -->
+  <div id="home-screen">
+    <div class="badge">🎹 고운음악학원 리듬 놀이</div>
+    <h1>음표 · 쉼표 박자 게임!</h1>
+    <p class="sub">단계를 골라 재미있게 퀴즈를 풀어 보세요 🎵</p>
+    <div class="mode-grid">
+      <button class="mode-btn" onclick="startGame('kind')">
+        <div class="mode-title">1단계 · 음표일까? 쉼표일까?</div>
+        <div class="mode-desc">소리를 내는 '음표'와 쉬어가는 '쉼표'를 구별해요!</div>
+      </button>
+      <button class="mode-btn" onclick="startGame('name')">
+        <div class="mode-title">2단계 · 내 이름을 맞혀 봐!</div>
+        <div class="mode-desc">온음표, 2분음표, 4분음표, 쉼표 이름을 골라요!</div>
+      </button>
+      <button class="mode-btn" onclick="startGame('beat')">
+        <div class="mode-title">3단계 · 몇 박자일까요?</div>
+        <div class="mode-desc">반 박(0.5박)부터 4박까지 박자 수를 맞혀요!</div>
+      </button>
+      <button class="mode-btn" onclick="startGame('mix')">
+        <div class="mode-title">⭐ 4단계 · 종합 왕중왕전</div>
+        <div class="mode-desc">음표·쉼표 구별 + 이름 + 박자가 섞여서 나와요!</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="game-screen" class="hidden">
+    <div class="top-bar">
+      <button class="back-btn" onclick="goHome()">← 처음으로</button>
+      <span class="pill" id="progress-pill">1 / 10</span>
+      <span class="pill score-pill" id="score-pill">⭐ 0점</span>
+    </div>
+
+    <div class="card-stage">
+      <div class="q-prompt" id="q-prompt">이 기호는 무엇일까요?</div>
+      <div class="svg-wrap" id="svg-wrap"></div>
+      <button class="sound-btn" id="sound-btn" onclick="playCurrentBeat()">🔊 박자 소리 들어보기</button>
+    </div>
+
+    <div class="choices" id="choices"></div>
+    <div class="feedback hidden" id="feedback"></div>
+    <button class="next-btn hidden" id="next-btn" onclick="nextQuestion()">다음 문제 →</button>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="result-screen" class="hidden">
+    <div class="trophy" id="trophy-icon">🏆</div>
+    <h1 id="result-title">참 잘했어요!</h1>
+    <p class="sub" id="result-desc"></p>
+    <button class="next-btn" onclick="startGame(currentMode)">한 번 더 하기 🔁</button>
+    <button class="choice-btn" style="width:100%; margin-top:10px;" onclick="goHome()">단계 고르기로 가기</button>
+  </div>
+</div>
+
+<script>
+// 5선보 배경 + 정확한 기보 SVG
+function staffSvg(inner) {
+  const lines = [42, 58, 74, 90, 106].map(y =>
+    `<line x1="25" y1="${y}" x2="235" y2="${y}" stroke="#c9bfb4" stroke-width="2"/>`
+  ).join('');
+  return `<svg width="260" height="145" viewBox="0 0 260 145" xmlns="http://www.w3.org/2000/svg">
+    ${lines}
+    ${inner}
+  </svg>`;
+}
+
+const ITEMS = [
+  {
+    id: 'whole_note',
+    kind: '음표',
+    name: '온음표',
+    beat: '4박자',
+    beatsNum: 4,
+    hint: '속이 하얗고 기둥이 없는 동그라미는 4박자 온음표예요!',
+    svg: staffSvg(`<ellipse cx="130" cy="82" rx="14" ry="10" fill="#fffcf7" stroke="#2d2926" stroke-width="4.5" transform="rotate(-15 130 82)"/>`)
+  },
+  {
+    id: 'dotted_half_note',
+    kind: '음표',
+    name: '점2분음표',
+    beat: '3박자',
+    beatsNum: 3,
+    hint: '하얀 음표 옆에 점(.)이 붙으면 2박+1박 = 3박자 점2분음표예요!',
+    svg: staffSvg(`
+      <ellipse cx="122" cy="82" rx="12" ry="9" fill="#fffcf7" stroke="#2d2926" stroke-width="4" transform="rotate(-20 122 82)"/>
+      <line x1="133" y1="80" x2="133" y2="28" stroke="#2d2926" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="147" cy="82" r="4.5" fill="#2d2926"/>
+    `)
+  },
+  {
+    id: 'half_note',
+    kind: '음표',
+    name: '2분음표',
+    beat: '2박자',
+    beatsNum: 2,
+    hint: '하얀 머리 + 기둥이 있으면 2박자 2분음표예요!',
+    svg: staffSvg(`
+      <ellipse cx="126" cy="82" rx="12" ry="9" fill="#fffcf7" stroke="#2d2926" stroke-width="4" transform="rotate(-20 126 82)"/>
+      <line x1="137" y1="80" x2="137" y2="28" stroke="#2d2926" stroke-width="4" stroke-linecap="round"/>
+    `)
+  },
+  {
+    id: 'quarter_note',
+    kind: '음표',
+    name: '4분음표',
+    beat: '1박자',
+    beatsNum: 1,
+    hint: '까만 머리 + 기둥이 있으면 1박자 4분음표예요!',
+    svg: staffSvg(`
+      <ellipse cx="126" cy="82" rx="12" ry="9" fill="#2d2926" transform="rotate(-20 126 82)"/>
+      <line x1="137" y1="80" x2="137" y2="28" stroke="#2d2926" stroke-width="4" stroke-linecap="round"/>
+    `)
+  },
+  {
+    id: 'eighth_note',
+    kind: '음표',
+    name: '8분음표',
+    beat: '반 박(0.5박)',
+    beatsNum: 0.5,
+    hint: '까만 머리에 기둥과 꼬리가 1개 달려 있으면 반 박자 8분음표예요!',
+    svg: staffSvg(`
+      <ellipse cx="122" cy="82" rx="12" ry="9" fill="#2d2926" transform="rotate(-20 122 82)"/>
+      <line x1="133" y1="80" x2="133" y2="28" stroke="#2d2926" stroke-width="4" stroke-linecap="round"/>
+      <path d="M133 28 C154 38, 155 56, 142 68" fill="none" stroke="#2d2926" stroke-width="4" stroke-linecap="round"/>
+    `)
+  },
+  {
+    id: 'whole_rest',
+    kind: '쉼표',
+    name: '온쉼표',
+    beat: '4박자',
+    beatsNum: 4,
+    hint: '4째 줄 아래에 거꾸로 매달린 모양(세숫대야 모양)이 4박자 온쉼표예요!',
+    svg: staffSvg(`<rect x="112" y="58" width="36" height="10" fill="#2d2926" rx="2"/>`)
+  },
+  {
+    id: 'half_rest',
+    kind: '쉼표',
+    name: '2분쉼표',
+    beat: '2박자',
+    beatsNum: 2,
+    hint: '3째 줄 위에 모자처럼 올라앉은 모양이 2박자 2분쉼표예요!',
+    svg: staffSvg(`<rect x="112" y="64" width="36" height="10" fill="#2d2926" rx="2"/>`)
+  },
+  {
+    id: 'quarter_rest',
+    kind: '쉼표',
+    name: '4분쉼표',
+    beat: '1박자',
+    beatsNum: 1,
+    hint: '번개처럼 지그재그 모양은 1박자 4분쉼표예요!',
+    svg: staffSvg(`
+      <path d="M126 42 L139 58 L124 72 L138 88 C126 92, 122 100, 134 106"
+        fill="none" stroke="#2d2926" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+    `)
+  },
+  {
+    id: 'eighth_rest',
+    kind: '쉼표',
+    name: '8분쉼표',
+    beat: '반 박(0.5박)',
+    beatsNum: 0.5,
+    hint: '동그란 점 하나에 빗금이 쓱 내려온 모양은 반 박자 8분쉼표예요!',
+    svg: staffSvg(`
+      <circle cx="122" cy="60" r="6" fill="#2d2926"/>
+      <path d="M124 62 Q134 65 140 56 L128 98" fill="none" stroke="#2d2926" stroke-width="4.5" stroke-linecap="round"/>
+    `)
+  }
+];
+
+const ALL_NAMES = ITEMS.map(i => i.name);
+const ALL_BEATS = ['4박자', '3박자', '2박자', '1박자', '반 박(0.5박)'];
+
+let currentMode = 'kind';
+let questions = [];
+let qIndex = 0;
+let score = 0;
+let answered = false;
+
+// Web Audio API (외부 파일 없이 딩동댕 + 박자 소리!)
+let audioCtx = null;
+function getCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+function playTone(freq, startTime, duration, type='sine', vol=0.2) {
+  const ctx = getCtx();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, startTime);
+  gain.gain.setValueAtTime(vol, startTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(startTime);
+  osc.stop(startTime + duration);
+}
+function sfxCorrect() {
+  const ctx = getCtx();
+  const now = ctx.currentTime;
+  playTone(523.25, now, 0.14, 'triangle', 0.25);
+  playTone(659.25, now + 0.1, 0.14, 'triangle', 0.25);
+  playTone(783.99, now + 0.2, 0.28, 'triangle', 0.28);
+}
+function sfxWrong() {
+  const ctx = getCtx();
+  const now = ctx.currentTime;
+  playTone(260, now, 0.18, 'sine', 0.2);
+  playTone(220, now + 0.15, 0.25, 'sine', 0.2);
+}
+function playCurrentBeat() {
+  const q = questions[qIndex];
+  const ctx = getCtx();
+  const now = ctx.currentTime;
+  const beatSec = 0.55;
+  const item = q.item;
+  if (item.kind === '음표') {
+    playTone(523.25, now, item.beatsNum * beatSec, 'triangle', 0.25);
+  } else {
+    // 쉼표는 박자만큼 작은 똑딱 메트로놈으로 길이 체감
+    const count = Math.max(1, Math.ceil(item.beatsNum));
+    for (let i = 0; i < count; i++) {
+      playTone(880, now + i * beatSec, 0.06, 'sine', 0.12);
+    }
+  }
+}
+
+function shuffle(arr) {
+  return [...arr].sort(() => Math.random() - 0.5);
+}
+
+function buildQuestions(mode) {
+  const list = [];
+  for (let i = 0; i < 10; i++) {
+    const item = ITEMS[Math.floor(Math.random() * ITEMS.length)];
+    let askType = mode;
+    if (mode === 'mix') {
+      const types = ['kind', 'name', 'beat'];
+      askType = types[i % 3];
+    }
+    let prompt = '';
+    let correct = '';
+    let options = [];
+    if (askType === 'kind') {
+      prompt = '이 친구는 음표일까요, 쉼표일까요?';
+      correct = item.kind;
+      options = ['음표 🎵', '쉼표 🤫'];
+    } else if (askType === 'name') {
+      prompt = '이 기호의 이름은 무엇일까요?';
+      correct = item.name;
+      const pool = shuffle(ALL_NAMES.filter(n => n !== correct)).slice(0, 3);
+      options = shuffle([correct, ...pool]);
+    } else {
+      prompt = '이 기호는 몇 박자 동안 연주(또는 쉼)할까요?';
+      correct = item.beat;
+      const pool = shuffle(ALL_BEATS.filter(b => b !== correct)).slice(0, 3);
+      options = shuffle([correct, ...pool]);
+    }
+    list.push({ item, askType, prompt, correct, options });
+  }
+  return list;
+}
+
+function startGame(mode) {
+  currentMode = mode;
+  questions = buildQuestions(mode);
+  qIndex = 0;
+  score = 0;
+  document.getElementById('home-screen').classList.add('hidden');
+  document.getElementById('result-screen').classList.add('hidden');
+  document.getElementById('game-screen').classList.remove('hidden');
+  renderQuestion();
+}
+
+function goHome() {
+  document.getElementById('game-screen').classList.add('hidden');
+  document.getElementById('result-screen').classList.add('hidden');
+  document.getElementById('home-screen').classList.remove('hidden');
+}
+
+function renderQuestion() {
+  answered = false;
+  const q = questions[qIndex];
+  document.getElementById('progress-pill').textContent = `${qIndex + 1} / ${questions.length}`;
+  document.getElementById('score-pill').textContent = `⭐ ${score}점`;
+  document.getElementById('q-prompt').textContent = q.prompt;
+  document.getElementById('svg-wrap').innerHTML = q.item.svg;
+  document.getElementById('feedback').classList.add('hidden');
+  document.getElementById('next-btn').classList.add('hidden');
+
+  const choicesEl = document.getElementById('choices');
+  choicesEl.innerHTML = '';
+  q.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = opt;
+    btn.onclick = () => selectAnswer(btn, opt);
+    choicesEl.appendChild(btn);
+  });
+}
+
+function selectAnswer(btn, opt) {
+  if (answered) return;
+  answered = true;
+  const q = questions[qIndex];
+  const cleanOpt = opt.replace(' 🎵', '').replace(' 🤫', '');
+  const isRight = cleanOpt === q.correct;
+
+  const btns = document.querySelectorAll('.choice-btn');
+  btns.forEach(b => {
+    b.disabled = true;
+    const cleanB = b.textContent.replace(' 🎵', '').replace(' 🤫', '');
+    if (cleanB === q.correct) b.classList.add('correct');
+  });
+
+  const fb = document.getElementById('feedback');
+  fb.classList.remove('hidden', 'fb-ok', 'fb-no');
+
+  if (isRight) {
+    score += 10;
+    document.getElementById('score-pill').textContent = `⭐ ${score}점`;
+    btn.classList.add('correct');
+    fb.classList.add('fb-ok');
+    fb.textContent = `정답! 🎉 ${q.item.name} (${q.item.beat})`;
+    sfxCorrect();
+  } else {
+    btn.classList.add('wrong');
+    fb.classList.add('fb-no');
+    fb.textContent = `아쉬워요! ${q.item.hint}`;
+    sfxWrong();
+  }
+
+  const nextBtn = document.getElementById('next-btn');
+  nextBtn.textContent = qIndex === questions.length - 1 ? '결과 보기 🏆' : '다음 문제 →';
+  nextBtn.classList.remove('hidden');
+}
+
+function nextQuestion() {
+  if (qIndex < questions.length - 1) {
+    qIndex++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+  document.getElementById('game-screen').classList.add('hidden');
+  document.getElementById('result-screen').classList.remove('hidden');
+  const icon = score >= 80 ? '🏆' : score >= 50 ? '🌟' : '🌱';
+  const title = score >= 80 ? '최고의 리듬 박사님!' : score >= 50 ? '아주 잘했어요!' : '조금만 더 연습해 봐요!';
+  document.getElementById('trophy-icon').textContent = icon;
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-desc').textContent = `10문제 중 ${score / 10}문제를 맞혀서 총 ${score}점을 받았어요!`;
+}
+</script>
+</body>
+</html>
