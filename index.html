@@ -272,17 +272,20 @@
   /* RHYTHM TAP GAME */
   .tap-pad {
     width: 100%;
-    height: 110px;
+    height: 115px;
     border-radius: 22px;
     border: 3px solid #f39c6b;
     background: linear-gradient(180deg, #fff5eb, #ffe3cc);
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 900;
     color: #b54515;
     cursor: pointer;
     margin-top: 8px;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
   }
-  .tap-pad:active { transform: scale(0.97); background: #ffd4b3; }
+  .tap-pad.holding { transform: scale(0.97); background: #ffc99e; border-color: #e05a2b; }
   .beat-dots { display: flex; justify-content: center; gap: 10px; margin: 10px 0; }
   .beat-dot { width: 16px; height: 16px; border-radius: 50%; background: #e5d8ca; }
   .beat-dot.lit { background: #ff7a45; transform: scale(1.25); }
@@ -463,7 +466,7 @@
       </div>
       <button class="sound-btn" onclick="startTapRound()">▶ 예비박 듣고 시작하기</button>
     </div>
-    <button class="tap-pad" onclick="onTapPad()">🥁 여기 톡! 두드리기</button>
+    <button class="tap-pad" id="tap-pad" onpointerdown="onTapDown(event)" onpointerup="onTapUp(event)" onpointercancel="onTapUp(event)">🥁 톡! 치거나 길게 꾹~ 누르기</button>
     <div class="feedback hidden" id="tap-feedback"></div>
   </div>
 
@@ -787,7 +790,27 @@ function switchTab(tab) {
     document.getElementById(t + '-modes').classList.toggle('hidden', t !== tab);
   });
 }
-function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function scatterMemoryCards(pairs) {
+  for (let attempt = 0; attempt < 80; attempt++) {
+    const arr = shuffle(pairs);
+    let hasAdj = false;
+    for (let i = 0; i < arr.length; i++) {
+      const r = Math.floor(i / 3), c = i % 3;
+      if (c < 2 && arr[i].key === arr[i + 1].key) { hasAdj = true; break; }
+      if (r < Math.floor(arr.length / 3) - 1 && arr[i].key === arr[i + 3].key) { hasAdj = true; break; }
+    }
+    if (!hasAdj) return arr;
+  }
+  return shuffle(pairs);
+}
 
 // ========================
 // 6. 퀴즈 엔진 (리듬 / 계이름 / 기호·조표)
@@ -962,7 +985,7 @@ function startMemory(theme, players) {
     });
   }
 
-  memCards = shuffle(pairs).map((c, idx) => ({ ...c, idx, open:false, done:false }));
+  memCards = scatterMemoryCards(pairs).map((c, idx) => ({ ...c, idx, open:false, done:false }));
   memFlipped = []; memLocked = false; memTurn = 0; memScores = [0, 0]; memMoves = 0; memMatched = 0;
   showOnly('memory-screen');
   renderMemory();
@@ -1057,14 +1080,46 @@ function flipMemCard(i) {
 }
 
 // ========================
-// 8. 박자 두드리기 미니게임
+// 8. 박자 두드리기 미니게임 (꾹 누르기 지원)
 // ========================
+function tapPatternSvg(notes) {
+  const lines = [48, 64, 80, 96, 112].map(y =>
+    `<line x1="20" y1="${y}" x2="260" y2="${y}" stroke="#c9bfb4" stroke-width="2"/>`
+  ).join('');
+  let inner = '';
+  notes.forEach(n => {
+    const x = 44 + n.start * 52;
+    const y = 88;
+    if (n.type === 'w') {
+      inner += `<ellipse cx="${x + 15}" cy="${y}" rx="13" ry="9" fill="#fffcf7" stroke="#2d2926" stroke-width="4" transform="rotate(-15 ${x+15} ${y})"/>`;
+    } else if (n.type === 'dh') {
+      inner += `<ellipse cx="${x}" cy="${y}" rx="11" ry="8" fill="#fffcf7" stroke="#2d2926" stroke-width="3.8" transform="rotate(-20 ${x} ${y})"/><line x1="${x+10}" y1="${y-2}" x2="${x+10}" y2="${y-44}" stroke="#2d2926" stroke-width="3.6" stroke-linecap="round"/><circle cx="${x+21}" cy="${y}" r="3.8" fill="#2d2926"/>`;
+    } else if (n.type === 'h') {
+      inner += `<ellipse cx="${x}" cy="${y}" rx="11" ry="8" fill="#fffcf7" stroke="#2d2926" stroke-width="3.8" transform="rotate(-20 ${x} ${y})"/><line x1="${x+10}" y1="${y-2}" x2="${x+10}" y2="${y-44}" stroke="#2d2926" stroke-width="3.6" stroke-linecap="round"/>`;
+    } else if (n.type === 'q') {
+      inner += `<ellipse cx="${x}" cy="${y}" rx="11" ry="8" fill="#2d2926" transform="rotate(-20 ${x} ${y})"/><line x1="${x+10}" y1="${y-2}" x2="${x+10}" y2="${y-44}" stroke="#2d2926" stroke-width="3.6" stroke-linecap="round"/>`;
+    } else if (n.type === 'e2') {
+      const x2 = x + 26;
+      inner += `<ellipse cx="${x}" cy="${y}" rx="9.5" ry="7" fill="#2d2926" transform="rotate(-20 ${x} ${y})"/><line x1="${x+8.5}" y1="${y-2}" x2="${x+8.5}" y2="${y-42}" stroke="#2d2926" stroke-width="3.2"/>`
+            + `<ellipse cx="${x2}" cy="${y}" rx="9.5" ry="7" fill="#2d2926" transform="rotate(-20 ${x2} ${y})"/><line x1="${x2+8.5}" y1="${y-2}" x2="${x2+8.5}" y2="${y-42}" stroke="#2d2926" stroke-width="3.2"/>`
+            + `<line x1="${x+8.5}" y1="${y-42}" x2="${x2+8.5}" y2="${y-42}" stroke="#2d2926" stroke-width="5.5"/>`;
+    }
+  });
+  return `<svg width="260" height="145" viewBox="0 0 280 150" xmlns="http://www.w3.org/2000/svg">${lines}${inner}</svg>`;
+}
+
 const TAP_PATTERNS = [
-  { label:'4분음표 × 4 (쿵-쿵-쿵-쿵)', beats:[0, 1, 2, 3], svg: rhythmStaffSvg(`<text x="140" y="88" text-anchor="middle" font-size="24" font-weight="800" fill="#2d2926">♩   ♩   ♩   ♩</text>`) },
-  { label:'2분음표 × 2 (하아-나, 두우-울)', beats:[0, 2], svg: rhythmStaffSvg(`<text x="140" y="88" text-anchor="middle" font-size="24" font-weight="800" fill="#2d2926">𝅗𝅥        𝅗𝅥</text>`) },
-  { label:'4분 + 4분 + 2분 (따-따-따아)', beats:[0, 1, 2], svg: rhythmStaffSvg(`<text x="140" y="88" text-anchor="middle" font-size="24" font-weight="800" fill="#2d2926">♩   ♩   𝅗𝅥</text>`) }
+  { label:'4분음표 × 4 (톡-톡-톡-톡)', notes:[{type:'q',start:0,dur:1},{type:'q',start:1,dur:1},{type:'q',start:2,dur:1},{type:'q',start:3,dur:1}] },
+  { label:'2분음표 × 2 (2박 꾹~ / 2박 꾹~)', notes:[{type:'h',start:0,dur:2},{type:'h',start:2,dur:2}] },
+  { label:'4분 + 4분 + 2분 (톡-톡-2박 꾹~)', notes:[{type:'q',start:0,dur:1},{type:'q',start:1,dur:1},{type:'h',start:2,dur:2}] },
+  { label:'2분 + 4분 + 4분 (2박 꾹~-톡-톡)', notes:[{type:'h',start:0,dur:2},{type:'q',start:2,dur:1},{type:'q',start:3,dur:1}] },
+  { label:'점2분 + 4분 (3박 꾹~~-톡)', notes:[{type:'dh',start:0,dur:3},{type:'q',start:3,dur:1}] },
+  { label:'4분 + 점2분 (톡-3박 꾹~~)', notes:[{type:'q',start:0,dur:1},{type:'dh',start:1,dur:3}] },
+  { label:'온음표 (4박 동안 쭈욱~ 누르기!)', notes:[{type:'w',start:0,dur:4}] },
+  { label:'8분음표 리듬 (톡-따다-톡-톡)', notes:[{type:'q',start:0,dur:1},{type:'e2',start:1,dur:0.5},{type:'q',start:2,dur:1},{type:'q',start:3,dur:1}] }
 ];
 let tapIdx = 0, tapCombo = 0, tapTimer = null, tapStartMs = 0, tapExpected = [], tapHits = [];
+let activeHold = null;
 
 function openTapGame() {
   tapIdx = 0; tapCombo = 0;
@@ -1073,19 +1128,27 @@ function openTapGame() {
 }
 function renderTapPattern() {
   const p = TAP_PATTERNS[tapIdx % TAP_PATTERNS.length];
+  const expected = [];
+  p.notes.forEach(n => {
+    if (n.type === 'e2') {
+      expected.push({ start: n.start, dur: 0.5 });
+      expected.push({ start: n.start + 0.5, dur: 0.5 });
+    } else {
+      expected.push({ start: n.start, dur: n.dur });
+    }
+  });
+  tapExpected = expected;
   document.getElementById('tap-score-pill').textContent = `콤보 ${tapCombo}`;
   document.getElementById('tap-prompt').textContent = p.label;
-  document.getElementById('tap-svg').innerHTML = p.svg;
+  document.getElementById('tap-svg').innerHTML = tapPatternSvg(p.notes);
   document.getElementById('tap-feedback').classList.add('hidden');
 }
 function startTapRound() {
   if (tapTimer) clearInterval(tapTimer);
-  const c = getCtx(), beatMs = 600;
+  const c = getCtx(), beatMs = 620;
   const dots = document.querySelectorAll('#beat-dots .beat-dot');
   let step = 0;
   tapHits = [];
-  const p = TAP_PATTERNS[tapIdx % TAP_PATTERNS.length];
-  tapExpected = p.beats;
   tapStartMs = performance.now() + 4 * beatMs;
 
   const fb = document.getElementById('tap-feedback');
@@ -1095,10 +1158,11 @@ function startTapRound() {
   function tick() {
     dots.forEach((d, idx) => d.classList.toggle('lit', idx === (step % 4)));
     playTone(step < 4 ? 880 : 660, c.currentTime, 0.07, 'sine', 0.16);
-    if (step === 4) fb.textContent = '지금! 리듬대로 톡톡 쳐 보세요 🥁';
+    if (step === 4) fb.textContent = '지금! 박자 길이만큼 톡 또는 꾹~ 눌러 보세요 🥁';
     if (step === 8) {
       clearInterval(tapTimer); tapTimer = null;
       dots.forEach(d => d.classList.remove('lit'));
+      if (activeHold) onTapUp();
       gradeTapRound();
     }
     step++;
@@ -1106,18 +1170,48 @@ function startTapRound() {
   tick();
   tapTimer = setInterval(tick, beatMs);
 }
-function onTapPad() {
+function onTapDown(e) {
+  if (e) e.preventDefault();
+  if (activeHold) return;
+  const pad = document.getElementById('tap-pad');
+  pad.classList.add('holding');
   const c = getCtx();
-  playTone(523.25, c.currentTime, 0.12, 'triangle', 0.25);
-  if (tapStartMs > 0) tapHits.push((performance.now() - tapStartMs) / 600);
+  const osc = c.createOscillator(), gain = c.createGain();
+  osc.type = 'triangle';
+  osc.frequency.setValueAtTime(523.25, c.currentTime);
+  gain.gain.setValueAtTime(0.26, c.currentTime);
+  osc.connect(gain); gain.connect(c.destination);
+  osc.start();
+  const startBeat = tapStartMs > 0 ? (performance.now() - tapStartMs) / 620 : 0;
+  activeHold = { osc, gain, startMs: performance.now(), startBeat };
+}
+function onTapUp(e) {
+  if (e) e.preventDefault();
+  const pad = document.getElementById('tap-pad');
+  pad.classList.remove('holding');
+  if (!activeHold) return;
+  const c = getCtx();
+  const durBeats = (performance.now() - activeHold.startMs) / 620;
+  try {
+    activeHold.gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.06);
+    activeHold.osc.stop(c.currentTime + 0.07);
+  } catch (_) {}
+  if (tapStartMs > 0) tapHits.push({ start: activeHold.startBeat, dur: durBeats });
+  activeHold = null;
 }
 function gradeTapRound() {
   const fb = document.getElementById('tap-feedback');
   fb.classList.remove('hidden', 'fb-ok', 'fb-no');
   let ok = tapHits.length === tapExpected.length;
+  let shortMsg = '';
   if (ok) {
     for (let i = 0; i < tapExpected.length; i++) {
-      if (Math.abs(tapHits[i] - tapExpected[i]) > 0.42) ok = false;
+      if (Math.abs(tapHits[i].start - tapExpected[i].start) > 0.48) { ok = false; break; }
+      if (tapExpected[i].dur >= 2 && tapHits[i].dur < tapExpected[i].dur - 0.7) {
+        ok = false;
+        shortMsg = `${tapExpected[i].dur}박 음표는 ${tapExpected[i].dur}박 동안 꾹~ 누르고 계셔야 해요!`;
+        break;
+      }
     }
   }
   if (ok) {
@@ -1125,14 +1219,14 @@ function gradeTapRound() {
     sfxCorrect();
     saveStudentScore(getCurrentStudent(), 15);
     fb.classList.add('fb-ok');
-    fb.textContent = `완벽한 박자! 🎉 (+15점) 다음 패턴으로 넘어가요!`;
+    fb.textContent = `완벽한 박자 & 길이! 🎉 (+15점) 다음 패턴으로 넘어가요!`;
     tapIdx++;
     setTimeout(renderTapPattern, 1300);
   } else {
     tapCombo = 0;
     sfxWrong();
     fb.classList.add('fb-no');
-    fb.textContent = `박자가 조금 어긋났어요! (${tapHits.length}번 침 / 정답 ${tapExpected.length}번) 다시 도전!`;
+    fb.textContent = shortMsg || `박자가 조금 어긋났어요! (${tapHits.length}번 침 / 정답 ${tapExpected.length}번) 다시 도전!`;
   }
   document.getElementById('tap-score-pill').textContent = `콤보 ${tapCombo}`;
 }
