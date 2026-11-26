@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>고운음악학원 · 리듬 & 계이름 놀이</title>
+<title>고운음악학원 · 음악 놀이 놀이터</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; }
   body {
@@ -11,48 +11,88 @@
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
-    padding: 16px;
+    align-items: flex-start;
+    padding: 14px;
     color: #2d2926;
   }
   .app {
     background: #ffffff;
     width: 100%;
-    max-width: 580px;
-    border-radius: 28px;
+    max-width: 600px;
+    border-radius: 26px;
     box-shadow: 0 14px 40px rgba(180, 120, 100, 0.16);
-    padding: 24px 20px 26px;
+    padding: 20px 16px 24px;
     text-align: center;
     border: 3px solid #ffe0cc;
+    margin: 8px 0;
+  }
+  .header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    gap: 8px;
   }
   .badge {
     display: inline-block;
     background: #fff1dc;
     color: #b5651d;
-    font-weight: 700;
-    font-size: 13px;
-    padding: 5px 14px;
+    font-weight: 800;
+    font-size: 12.5px;
+    padding: 5px 12px;
     border-radius: 99px;
-    margin-bottom: 8px;
   }
-  h1 { font-size: 23px; margin-bottom: 6px; color: #2d2926; }
-  .sub { font-size: 14px; color: #7a7067; margin-bottom: 16px; }
+  .rank-open-btn {
+    background: #fff7d6;
+    border: 1.5px solid #f0d77b;
+    color: #966600;
+    font-weight: 800;
+    font-size: 12.5px;
+    padding: 5px 12px;
+    border-radius: 99px;
+    cursor: pointer;
+  }
+  h1 { font-size: 22px; margin-bottom: 4px; color: #2d2926; }
+  .sub { font-size: 13.5px; color: #7a7067; margin-bottom: 12px; }
+
+  .player-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    background: #fff9f2;
+    border: 2px solid #f2dfc8;
+    border-radius: 16px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+  }
+  .player-bar label { font-size: 13px; font-weight: 800; color: #73563d; white-space: nowrap; }
+  .player-select {
+    flex: 1;
+    border: 1.5px solid #e6cdb2;
+    border-radius: 10px;
+    padding: 6px 10px;
+    font-size: 14px;
+    font-weight: 700;
+    background: #fff;
+    color: #2d2926;
+  }
 
   .tab-row {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 14px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+    margin-bottom: 12px;
     background: #f8f2ec;
     padding: 5px;
     border-radius: 16px;
   }
   .tab-btn {
-    flex: 1;
     border: none;
     background: transparent;
-    padding: 10px 8px;
+    padding: 9px 4px;
     border-radius: 12px;
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 800;
     color: #7c7066;
     cursor: pointer;
@@ -64,21 +104,18 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.07);
   }
 
-  .mode-grid {
-    display: grid;
-    gap: 10px;
-  }
+  .mode-grid { display: grid; gap: 9px; }
   .mode-btn {
-    border: 2.5px solid #f0dfd1;
+    border: 2px solid #f0dfd1;
     background: #fffaf5;
-    border-radius: 18px;
-    padding: 14px 16px;
+    border-radius: 16px;
+    padding: 13px 14px;
     cursor: pointer;
     text-align: left;
-    transition: transform 0.12s, border-color 0.15s, background 0.15s;
+    transition: transform 0.1s, border-color 0.15s, background 0.15s;
   }
-  .mode-btn:hover { transform: translateY(-2px); border-color: #f39c6b; background: #fff3e8; }
-  .mode-title { font-size: 16.5px; font-weight: 800; color: #2d2926; margin-bottom: 2px; }
+  .mode-btn:hover { transform: translateY(-1px); border-color: #f39c6b; background: #fff3e8; }
+  .mode-title { font-size: 15.5px; font-weight: 800; color: #2d2926; margin-bottom: 2px; }
   .mode-desc { font-size: 12.5px; color: #776c63; line-height: 1.35; }
 
   .top-bar {
@@ -86,39 +123,25 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 12px;
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 700;
   }
-  .pill {
-    background: #f7f1eb;
-    padding: 6px 12px;
-    border-radius: 99px;
-    color: #5c5148;
-  }
+  .pill { background: #f7f1eb; padding: 6px 12px; border-radius: 99px; color: #5c5148; }
   .score-pill { background: #fff2cc; color: #9c6a00; }
   .back-btn {
-    background: none;
-    border: none;
-    font-size: 14px;
-    color: #8b7e74;
-    cursor: pointer;
-    font-weight: 700;
+    background: none; border: none; font-size: 14px; color: #8b7e74; cursor: pointer; font-weight: 700;
   }
 
   .card-stage {
     background: #fffcf7;
     border: 2.5px solid #efe3d5;
-    border-radius: 22px;
-    padding: 14px 12px;
-    margin-bottom: 14px;
+    border-radius: 20px;
+    padding: 14px 10px;
+    margin-bottom: 12px;
   }
-  .q-prompt { font-size: 17px; font-weight: 800; margin-bottom: 6px; color: #3a312b; }
-  .svg-wrap {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 165px;
-  }
+  .q-prompt { font-size: 16.5px; font-weight: 800; margin-bottom: 6px; color: #3a312b; }
+  .svg-wrap { display: flex; justify-content: center; align-items: center; min-height: 155px; }
+  .symbol-big { font-size: 56px; font-weight: 900; color: #2d2926; font-family: Georgia, serif; }
   .sound-btn {
     margin-top: 6px;
     background: #eef6ff;
@@ -131,43 +154,39 @@
     cursor: pointer;
   }
 
-  .choices {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
+  .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
   .choices.three-col { grid-template-columns: repeat(3, 1fr); }
   .choices.four-col { grid-template-columns: repeat(4, 1fr); }
   .choice-btn {
     background: #ffffff;
     border: 2.5px solid #e6dacd;
-    border-radius: 16px;
-    padding: 14px 8px;
-    font-size: 16.5px;
+    border-radius: 15px;
+    padding: 13px 6px;
+    font-size: 15.5px;
     font-weight: 800;
     color: #2d2926;
     cursor: pointer;
     transition: transform 0.1s, background 0.15s, border-color 0.15s;
   }
-  .choice-btn:hover:not(:disabled) { background: #fff6ed; border-color: #f0a875; transform: scale(1.02); }
+  .choice-btn:hover:not(:disabled) { background: #fff6ed; border-color: #f0a875; }
   .choice-btn.correct { background: #dff7ea; border-color: #34a86e; color: #166534; }
   .choice-btn.wrong { background: #ffe5e3; border-color: #e05a4f; color: #991b1b; }
 
   .feedback {
-    min-height: 44px;
-    margin-top: 12px;
-    font-size: 14.5px;
+    min-height: 42px;
+    margin-top: 11px;
+    font-size: 14px;
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 8px 12px;
-    border-radius: 14px;
+    border-radius: 13px;
   }
   .fb-ok { background: #eafaf1; color: #1f7a4c; }
   .fb-no { background: #fff0ee; color: #c0392b; }
 
-  .next-btn {
+  .primary-btn {
     margin-top: 10px;
     width: 100%;
     padding: 13px;
@@ -175,95 +194,289 @@
     border-radius: 16px;
     background: #ff8c5a;
     color: white;
-    font-size: 16.5px;
+    font-size: 16px;
     font-weight: 800;
     cursor: pointer;
   }
-  .next-btn:hover { background: #f27a46; }
+  .primary-btn:hover { background: #f27a46; }
+  .secondary-btn {
+    width: 100%;
+    margin-top: 9px;
+    background: #ffffff;
+    border: 2.5px solid #e6dacd;
+    border-radius: 15px;
+    padding: 12px;
+    font-size: 15.5px;
+    font-weight: 800;
+    color: #2d2926;
+    cursor: pointer;
+  }
+
+  /* MEMORY GAME */
+  .mem-players {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .mem-pbox {
+    flex: 1;
+    padding: 8px 10px;
+    border-radius: 14px;
+    border: 2px solid #e6dacd;
+    background: #fffaf5;
+    font-size: 13.5px;
+    font-weight: 800;
+  }
+  .mem-pbox.active-turn {
+    border-color: #ff8c5a;
+    background: #fff0e5;
+    color: #c2410c;
+    box-shadow: 0 2px 10px rgba(255,140,90,0.2);
+  }
+  .mem-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .mem-card {
+    aspect-ratio: 1 / 1;
+    border-radius: 16px;
+    border: 2.5px solid #e6dacd;
+    background: linear-gradient(135deg, #ffe5d1, #ffd6e0);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 6px;
+    font-weight: 800;
+    font-size: 14px;
+    color: #9a6544;
+    user-select: none;
+    transition: transform 0.15s;
+  }
+  .mem-card.flipped {
+    background: #ffffff;
+    border-color: #f39c6b;
+    color: #2d2926;
+  }
+  .mem-card.matched {
+    background: #eafaf1;
+    border-color: #34a86e;
+    color: #166534;
+    cursor: default;
+  }
+  .mem-card svg { max-width: 88px; max-height: 70px; }
+
+  /* RHYTHM TAP GAME */
+  .tap-pad {
+    width: 100%;
+    height: 110px;
+    border-radius: 22px;
+    border: 3px solid #f39c6b;
+    background: linear-gradient(180deg, #fff5eb, #ffe3cc);
+    font-size: 22px;
+    font-weight: 900;
+    color: #b54515;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+  .tap-pad:active { transform: scale(0.97); background: #ffd4b3; }
+  .beat-dots { display: flex; justify-content: center; gap: 10px; margin: 10px 0; }
+  .beat-dot { width: 16px; height: 16px; border-radius: 50%; background: #e5d8ca; }
+  .beat-dot.lit { background: #ff7a45; transform: scale(1.25); }
+
+  /* RANKING */
+  .rank-list { text-align: left; display: grid; gap: 8px; margin: 12px 0; max-height: 360px; overflow-y: auto; }
+  .rank-row {
+    display: flex; justify-content: space-between; align-items: center;
+    background: #fffaf5; border: 1.5px solid #efe0cf; border-radius: 12px; padding: 9px 12px;
+    font-size: 14px; font-weight: 700;
+  }
 
   .hidden { display: none; }
-  .trophy { font-size: 62px; margin: 10px 0; }
+  .trophy { font-size: 58px; margin: 8px 0; }
 </style>
 </head>
 <body>
 <div class="app">
   <!-- HOME SCREEN -->
   <div id="home-screen">
-    <div class="badge">🎹 고운음악학원 음악 놀이</div>
-    <h1>리듬 · 계이름 마스터 게임!</h1>
-    <p class="sub">원하는 놀이를 고르고 단계를 선택해 보세요 🎵</p>
+    <div class="header-row">
+      <span class="badge">🎹 고운음악학원 음악 놀이터</span>
+      <button class="rank-open-btn" onclick="openRanking()">🏆 명예의 전당</button>
+    </div>
+    <h1>리듬 · 계이름 · 기호 게임!</h1>
+    <p class="sub">내 이름을 고르고 재미있는 음악 놀이를 시작해 보세요 🎵</p>
 
-    <div class="tab-row">
-      <button class="tab-btn active" id="tab-rhythm" onclick="switchTab('rhythm')">🥁 리듬 놀이</button>
-      <button class="tab-btn" id="tab-pitch" onclick="switchTab('pitch')">🎼 계이름 놀이</button>
+    <div class="player-bar">
+      <label for="student-select">도전자</label>
+      <select id="student-select" class="player-select" onchange="onStudentChange()"></select>
     </div>
 
-    <!-- RHYTHM MODES -->
+    <div class="tab-row">
+      <button class="tab-btn active" id="tab-rhythm" onclick="switchTab('rhythm')">🥁 리듬</button>
+      <button class="tab-btn" id="tab-pitch" onclick="switchTab('pitch')">🎼 계이름</button>
+      <button class="tab-btn" id="tab-symbol" onclick="switchTab('symbol')">🎵 기호·조표</button>
+      <button class="tab-btn" id="tab-memory" onclick="switchTab('memory')">🃏 카드·대결</button>
+    </div>
+
+    <!-- 1. 리듬 -->
     <div id="rhythm-modes" class="mode-grid">
-      <button class="mode-btn" onclick="startGame('rhythm', 'kind')">
+      <button class="mode-btn" onclick="startQuiz('rhythm', 'kind')">
         <div class="mode-title">1단계 · 음표일까? 쉼표일까?</div>
         <div class="mode-desc">소리를 내는 '음표'와 쉬어가는 '쉼표'를 구별해요!</div>
       </button>
-      <button class="mode-btn" onclick="startGame('rhythm', 'name')">
+      <button class="mode-btn" onclick="startQuiz('rhythm', 'name')">
         <div class="mode-title">2단계 · 음표·쉼표 이름 맞히기</div>
         <div class="mode-desc">온음표, 2분음표, 4분음표, 8분음표와 쉼표 이름을 골라요!</div>
       </button>
-      <button class="mode-btn" onclick="startGame('rhythm', 'beat')">
+      <button class="mode-btn" onclick="startQuiz('rhythm', 'beat')">
         <div class="mode-title">3단계 · 몇 박자일까요?</div>
         <div class="mode-desc">반 박(0.5박)부터 4박까지 박자 수를 맞혀요!</div>
       </button>
-      <button class="mode-btn" onclick="startGame('rhythm', 'mix')">
+      <button class="mode-btn" onclick="startQuiz('rhythm', 'mix')">
         <div class="mode-title">⭐ 4단계 · 리듬 종합 왕중왕전</div>
         <div class="mode-desc">음표·쉼표 구별 + 이름 + 박자가 섞여서 나와요!</div>
       </button>
+      <button class="mode-btn" onclick="openTapGame()">
+        <div class="mode-title">🥁 보너스 · 박자 직접 두드리기!</div>
+        <div class="mode-desc">메트로놈 소리에 맞춰 리듬 카드를 톡톡 쳐 보세요!</div>
+      </button>
     </div>
 
-    <!-- PITCH MODES -->
+    <!-- 2. 계이름 -->
     <div id="pitch-modes" class="mode-grid hidden">
-      <button class="mode-btn" onclick="startGame('pitch', 'three_c')">
+      <button class="mode-btn" onclick="startQuiz('pitch', 'three_c')">
         <div class="mode-title">1단계 · 도 자리 세 개 찾기</div>
         <div class="mode-desc">낮은 도 · 가온 도 · 높은 도 위치를 정확히 구별해요!</div>
       </button>
-      <button class="mode-btn" onclick="startGame('pitch', 'treble_mid')">
+      <button class="mode-btn" onclick="startQuiz('pitch', 'treble_mid')">
         <div class="mode-title">2단계 · 높은음자리표 (가온 도 ~ 윗덧줄 전)</div>
         <div class="mode-desc">가온 도부터 오선 맨 위 솔까지 기본 계이름을 익혀요!</div>
       </button>
-      <button class="mode-btn" onclick="startGame('pitch', 'treble_high')">
+      <button class="mode-btn" onclick="startQuiz('pitch', 'treble_high')">
         <div class="mode-title">3단계 · 높은음자리표 위덧줄 (높은 도 ~ 윗덧줄 3개)</div>
         <div class="mode-desc">높은 도부터 윗덧줄 3개(미)까지 높은 음을 읽어요!</div>
       </button>
-      <button class="mode-btn" onclick="startGame('pitch', 'treble_low')">
+      <button class="mode-btn" onclick="startQuiz('pitch', 'treble_low')">
         <div class="mode-title">4단계 · 높은음자리표 아래덧줄 (가온 도 ~ 아래덧줄 2개)</div>
         <div class="mode-desc">가온 도에서 내려가는 시·라(아래덧줄 2개)까지 익혀요!</div>
       </button>
-      <button class="mode-btn" onclick="startGame('pitch', 'bass_all')">
+      <button class="mode-btn" onclick="startQuiz('pitch', 'bass_all')">
         <div class="mode-title">5단계 · 낮은음자리표 (기본 + 위·아래덧줄)</div>
         <div class="mode-desc">낮은 도·가온 도부터 아래덧줄·위덧줄까지 왼손 악보를 읽어요!</div>
       </button>
-      <button class="mode-btn" onclick="startGame('pitch', 'pitch_mix')">
+      <button class="mode-btn" onclick="startQuiz('pitch', 'pitch_mix')">
         <div class="mode-title">⭐ 6단계 · 계이름 종합 왕중왕전</div>
         <div class="mode-desc">높은음자리표 + 낮은음자리표 + 모든 덧줄이 다 나와요!</div>
       </button>
     </div>
+
+    <!-- 3. 기호 · 조표 -->
+    <div id="symbol-modes" class="mode-grid hidden">
+      <button class="mode-btn" onclick="startQuiz('symbol', 'art')">
+        <div class="mode-title">1단계 · 연주·반복 기호 (테누토·악센트·도돌이표)</div>
+        <div class="mode-desc">테누토, 악센트, 스타카토, 페르마타, 도돌이표, D.C., D.S.를 익혀요!</div>
+      </button>
+      <button class="mode-btn" onclick="startQuiz('symbol', 'dyn')">
+        <div class="mode-title">2단계 · 셈여림·악상기호 (p·f·크레센도)</div>
+        <div class="mode-desc">pp부터 ff까지 세기 기호와 점점 세게·점점 여리게를 맞혀요!</div>
+      </button>
+      <button class="mode-btn" onclick="startQuiz('symbol', 'key')">
+        <div class="mode-title">3단계 · 조성(♯·♭) 장조 맞히기</div>
+        <div class="mode-desc">조표 개수(♯·♭)를 보고 무슨 장조인지 맞춰요! (고학년 추천)</div>
+      </button>
+      <button class="mode-btn" onclick="startQuiz('symbol', 'sym_mix')">
+        <div class="mode-title">⭐ 4단계 · 기호·조성 종합 퀴즈</div>
+        <div class="mode-desc">연주 기호 + 셈여림 + 조성 문제가 섞여서 나와요!</div>
+      </button>
+    </div>
+
+    <!-- 4. 메모리 카드 & 2인 대결 -->
+    <div id="memory-modes" class="mode-grid hidden">
+      <div class="player-bar" style="margin-bottom:2px;">
+        <label for="p2-select">2P 대결 상대</label>
+        <select id="p2-select" class="player-select"></select>
+      </div>
+      <button class="mode-btn" onclick="startMemory('rhythm_name', 1)">
+        <div class="mode-title">🃏 혼자하기 · 음표·쉼표 ↔ 이름 짝 맞추기</div>
+        <div class="mode-desc">12장의 카드를 뒤집어 그림과 이름을 맞추세요!</div>
+      </button>
+      <button class="mode-btn" onclick="startMemory('rhythm_name', 2)">
+        <div class="mode-title">⚔️ 2인 대결 · 음표·쉼표 ↔ 이름 대결!</div>
+        <div class="mode-desc">친구와 번갈아 뒤집기! 짝을 맞히면 +1점 & 한 번 더 기회!</div>
+      </button>
+      <button class="mode-btn" onclick="startMemory('rhythm_beat', 2)">
+        <div class="mode-title">⚔️ 2인 대결 · 음표·쉼표 ↔ 박자 대결!</div>
+        <div class="mode-desc">그림을 보고 몇 박자인지 짝을 찾아 점수를 따세요!</div>
+      </button>
+      <button class="mode-btn" onclick="startMemory('symbol_meaning', 2)">
+        <div class="mode-title">⚔️ 2인 대결 · 음악기호 ↔ 뜻 대결!</div>
+        <div class="mode-desc">테누토, 악센트, 페르마타, 셈여림 기호의 짝을 찾아요!</div>
+      </button>
+    </div>
   </div>
 
-  <!-- GAME SCREEN -->
+  <!-- QUIZ SCREEN -->
   <div id="game-screen" class="hidden">
     <div class="top-bar">
       <button class="back-btn" onclick="goHome()">← 처음으로</button>
       <span class="pill" id="progress-pill">1 / 10</span>
       <span class="pill score-pill" id="score-pill">⭐ 0점</span>
     </div>
-
     <div class="card-stage">
-      <div class="q-prompt" id="q-prompt">이 기호는 무엇일까요?</div>
+      <div class="q-prompt" id="q-prompt">문제</div>
       <div class="svg-wrap" id="svg-wrap"></div>
       <button class="sound-btn" id="sound-btn" onclick="playCurrentSound()">🔊 소리 들어보기</button>
     </div>
-
     <div class="choices" id="choices"></div>
     <div class="feedback hidden" id="feedback"></div>
-    <button class="next-btn hidden" id="next-btn" onclick="nextQuestion()">다음 문제 →</button>
+    <button class="primary-btn hidden" id="next-btn" onclick="nextQuestion()">다음 문제 →</button>
+  </div>
+
+  <!-- MEMORY SCREEN -->
+  <div id="memory-screen" class="hidden">
+    <div class="top-bar">
+      <button class="back-btn" onclick="goHome()">← 처음으로</button>
+      <span class="pill" id="mem-moves-pill">시도 0회</span>
+      <span class="pill score-pill" id="mem-left-pill">남은 짝 6개</span>
+    </div>
+    <div class="mem-players" id="mem-players"></div>
+    <div class="mem-grid" id="mem-grid"></div>
+    <div class="feedback hidden" id="mem-feedback"></div>
+  </div>
+
+  <!-- TAP RHYTHM SCREEN -->
+  <div id="tap-screen" class="hidden">
+    <div class="top-bar">
+      <button class="back-btn" onclick="goHome()">← 처음으로</button>
+      <span class="pill">4/4박자 리듬 치기</span>
+      <span class="pill score-pill" id="tap-score-pill">콤보 0</span>
+    </div>
+    <div class="card-stage">
+      <div class="q-prompt" id="tap-prompt">메트로놈 4박 예비박 후 리듬을 쳐 보세요!</div>
+      <div class="svg-wrap" id="tap-svg"></div>
+      <div class="beat-dots" id="beat-dots">
+        <div class="beat-dot"></div><div class="beat-dot"></div><div class="beat-dot"></div><div class="beat-dot"></div>
+      </div>
+      <button class="sound-btn" onclick="startTapRound()">▶ 예비박 듣고 시작하기</button>
+    </div>
+    <button class="tap-pad" onclick="onTapPad()">🥁 여기 톡! 두드리기</button>
+    <div class="feedback hidden" id="tap-feedback"></div>
+  </div>
+
+  <!-- RANKING SCREEN -->
+  <div id="ranking-screen" class="hidden">
+    <div class="top-bar">
+      <button class="back-btn" onclick="goHome()">← 처음으로</button>
+      <span class="pill score-pill">🏆 고운음악학원 명예의 전당</span>
+      <button class="back-btn" onclick="clearRecords()" style="color:#d9534f;">초기화</button>
+    </div>
+    <p class="sub" style="margin-bottom:6px;">이 기기에서 플레이한 학생별 최고·누적 점수예요!</p>
+    <div class="rank-list" id="rank-list"></div>
+    <button class="primary-btn" onclick="goHome()">게임 하러 가기 🎵</button>
   </div>
 
   <!-- RESULT SCREEN -->
@@ -271,20 +484,76 @@
     <div class="trophy" id="trophy-icon">🏆</div>
     <h1 id="result-title">참 잘했어요!</h1>
     <p class="sub" id="result-desc"></p>
-    <button class="next-btn" onclick="startGame(currentGameType, currentMode)">한 번 더 하기 🔁</button>
-    <button class="choice-btn" id="result-home-btn" style="width:100%; margin-top:10px;" onclick="goHome()">단계 고르기로 가기</button>
+    <button class="primary-btn" id="retry-btn" onclick="retryLast()">한 번 더 하기 🔁</button>
+    <button class="secondary-btn" id="result-home-btn" onclick="goHome()">단계 고르기로 가기</button>
   </div>
 </div>
 
 <script>
 // ========================
-// 1. 리듬 SVG & 데이터
+// 1. 고운출석부 학생 이름 (이름만 안전 표시)
+// ========================
+const STUDENTS = [
+  '은설','은채','혜성','소연','연서','예나','예린','유나','초은','하율',
+  '하은','승윤','윤솔','지안','하임','혜미','나은','지성','윤결','동완',
+  '은수','은재','정민','다엘','영채','진선','다솔','다솜'
+];
+
+function initStudentSelects() {
+  const s1 = document.getElementById('student-select');
+  const s2 = document.getElementById('p2-select');
+  const saved = localStorage.getItem('goun_student') || STUDENTS[0];
+  STUDENTS.forEach(name => {
+    const o1 = document.createElement('option');
+    o1.value = name; o1.textContent = name;
+    if (name === saved) o1.selected = true;
+    s1.appendChild(o1);
+
+    const o2 = document.createElement('option');
+    o2.value = name; o2.textContent = name;
+    if (name === STUDENTS[1]) o2.selected = true;
+    s2.appendChild(o2);
+  });
+  const customOpt = document.createElement('option');
+  customOpt.value = '__custom__'; customOpt.textContent = '+ 직접 이름 입력';
+  s1.appendChild(customOpt);
+}
+
+function getCurrentStudent() {
+  const val = document.getElementById('student-select').value;
+  if (val === '__custom__') return localStorage.getItem('goun_custom_student') || '친구';
+  return val;
+}
+function onStudentChange() {
+  const sel = document.getElementById('student-select');
+  if (sel.value === '__custom__') {
+    const name = prompt('학생 이름을 입력해 주세요 (예: 지우)');
+    if (name && name.trim()) {
+      localStorage.setItem('goun_custom_student', name.trim());
+    }
+  } else {
+    localStorage.setItem('goun_student', sel.value);
+  }
+}
+
+function saveStudentScore(name, pts) {
+  if (!name || pts <= 0) return;
+  const data = JSON.parse(localStorage.getItem('goun_records') || '{}');
+  if (!data[name]) data[name] = { total: 0, best: 0, plays: 0 };
+  data[name].total += pts;
+  data[name].plays += 1;
+  if (pts > data[name].best) data[name].best = pts;
+  localStorage.setItem('goun_records', JSON.stringify(data));
+}
+
+// ========================
+// 2. 리듬 SVG & 데이터
 // ========================
 function rhythmStaffSvg(inner) {
   const lines = [48, 64, 80, 96, 112].map(y =>
     `<line x1="25" y1="${y}" x2="255" y2="${y}" stroke="#c9bfb4" stroke-width="2"/>`
   ).join('');
-  return `<svg width="280" height="155" viewBox="0 0 280 155" xmlns="http://www.w3.org/2000/svg">${lines}${inner}</svg>`;
+  return `<svg width="260" height="150" viewBox="0 0 280 155" xmlns="http://www.w3.org/2000/svg">${lines}${inner}</svg>`;
 }
 
 const RHYTHM_ITEMS = [
@@ -318,68 +587,26 @@ const RHYTHM_ITEMS = [
 ];
 
 // ========================
-// 2. 계이름 SVG & 데이터
+// 3. 계이름 SVG & 데이터
 // ========================
-// 5선보: Line1(bottom)=120, Line2=106, Line3=92, Line4=78, Line5(top)=64 (step=7px)
 function pitchStaffSvg(clef, pos) {
   const lines = [64, 78, 92, 106, 120].map(y =>
     `<line x1="25" y1="${y}" x2="255" y2="${y}" stroke="#bfb4a8" stroke-width="2"/>`
   ).join('');
+  let clefSvg = clef === 'treble'
+    ? `<g transform="translate(36, 48) scale(0.95)"><path d="M22 86 C12 86, 8 78, 13 72 C17 67, 24 71, 22 77 C20 82, 13 82, 13 75 M22 86 C32 86, 36 74, 30 62 C25 53, 14 54, 12 63 C10 71, 18 77, 26 73 C33 69, 34 57, 25 48 C18 41, 16 26, 23 12 C27 4, 31 8, 29 18 L19 95 C18 103, 11 105, 8 100" fill="none" stroke="#3c342e" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></g>`
+    : `<g transform="translate(38, 64)"><circle cx="12" cy="14" r="5" fill="#3c342e"/><path d="M10 14 C12 2, 32 0, 34 16 C35 30, 22 44, 8 52" fill="none" stroke="#3c342e" stroke-width="4" stroke-linecap="round"/><circle cx="43" cy="8" r="3.2" fill="#3c342e"/><circle cx="43" cy="22" r="3.2" fill="#3c342e"/></g>`;
 
-  // 음자리표 SVG (크로스플랫폼 100% 호환)
-  let clefSvg = '';
-  if (clef === 'treble') {
-    clefSvg = `
-      <g transform="translate(36, 48) scale(0.95)">
-        <path d="M22 86 C12 86, 8 78, 13 72 C17 67, 24 71, 22 77 C20 82, 13 82, 13 75
-                 M22 86 C32 86, 36 74, 30 62 C25 53, 14 54, 12 63 C10 71, 18 77, 26 73
-                 C33 69, 34 57, 25 48 C18 41, 16 26, 23 12 C27 4, 31 8, 29 18
-                 L19 95 C18 103, 11 105, 8 100"
-          fill="none" stroke="#3c342e" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
-      </g>`;
-  } else {
-    clefSvg = `
-      <g transform="translate(38, 64)">
-        <circle cx="12" cy="14" r="5" fill="#3c342e"/>
-        <path d="M10 14 C12 2, 32 0, 34 16 C35 30, 22 44, 8 52"
-          fill="none" stroke="#3c342e" stroke-width="4" stroke-linecap="round"/>
-        <circle cx="43" cy="8" r="3.2" fill="#3c342e"/>
-        <circle cx="43" cy="22" r="3.2" fill="#3c342e"/>
-      </g>`;
-  }
-
-  const noteX = 165;
-  const noteY = 120 - pos * 7;
-
-  // 덧줄 (pos >= 10 위, pos <= -2 아래)
+  const noteX = 165, noteY = 120 - pos * 7;
   let ledgers = '';
-  if (pos >= 10) {
-    for (let p = 10; p <= pos; p += 2) {
-      const ly = 120 - p * 7;
-      ledgers += `<line x1="${noteX - 20}" y1="${ly}" x2="${noteX + 20}" y2="${ly}" stroke="#5a5048" stroke-width="2.2"/>`;
-    }
-  }
-  if (pos <= -2) {
-    for (let p = -2; p >= pos; p -= 2) {
-      const ly = 120 - p * 7;
-      ledgers += `<line x1="${noteX - 20}" y1="${ly}" x2="${noteX + 20}" y2="${ly}" stroke="#5a5048" stroke-width="2.2"/>`;
-    }
-  }
-
-  // 음표 (온음표 스타일 또는 4분음표 스타일 — 가독성을 위해 4분음표 기둥 포함)
-  const stemUp = pos < 4;
-  const stem = stemUp
-    ? `<line x1="${noteX + 10}" y1="${noteY - 2}" x2="${noteX + 10}" y2="${noteY - 40}" stroke="#2d2926" stroke-width="3.2" stroke-linecap="round"/>`
-    : `<line x1="${noteX - 10}" y1="${noteY + 2}" x2="${noteX - 10}" y2="${noteY + 40}" stroke="#2d2926" stroke-width="3.2" stroke-linecap="round"/>`;
-
-  const noteHead = `<ellipse cx="${noteX}" cy="${noteY}" rx="11" ry="8" fill="#2d2926" transform="rotate(-18 ${noteX} ${noteY})"/>`;
-
-  return `<svg width="280" height="175" viewBox="0 0 280 175" xmlns="http://www.w3.org/2000/svg">
-    ${lines}${clefSvg}${ledgers}${noteHead}${stem}
-  </svg>`;
+  if (pos >= 10) for (let p = 10; p <= pos; p += 2) ledgers += `<line x1="${noteX-20}" y1="${120-p*7}" x2="${noteX+20}" y2="${120-p*7}" stroke="#5a5048" stroke-width="2.2"/>`;
+  if (pos <= -2) for (let p = -2; p >= pos; p -= 2) ledgers += `<line x1="${noteX-20}" y1="${120-p*7}" x2="${noteX+20}" y2="${120-p*7}" stroke="#5a5048" stroke-width="2.2"/>`;
+  const stem = pos < 4
+    ? `<line x1="${noteX+10}" y1="${noteY-2}" x2="${noteX+10}" y2="${noteY-40}" stroke="#2d2926" stroke-width="3.2" stroke-linecap="round"/>`
+    : `<line x1="${noteX-10}" y1="${noteY+2}" x2="${noteX-10}" y2="${noteY+40}" stroke="#2d2926" stroke-width="3.2" stroke-linecap="round"/>`;
+  return `<svg width="260" height="165" viewBox="0 0 280 175" xmlns="http://www.w3.org/2000/svg">${lines}${clefSvg}${ledgers}<ellipse cx="${noteX}" cy="${noteY}" rx="11" ry="8" fill="#2d2926" transform="rotate(-18 ${noteX} ${noteY})"/>${stem}</svg>`;
 }
 
-// 음높이 Hz 계산
 const NOTE_HZ = {
   C2:65.41, D2:73.42, E2:82.41, F2:87.31, G2:98.00, A2:110.00, B2:123.47,
   C3:130.81, D3:146.83, E3:164.81, F3:174.61, G3:196.00, A3:220.00, B3:246.94,
@@ -387,62 +614,50 @@ const NOTE_HZ = {
   C5:523.25, D5:587.33, E5:659.25, F5:698.46, G5:783.99, A5:880.00, B5:987.77,
   C6:1046.50, D6:1174.66, E6:1318.51
 };
-
-// 계이름 데이터셋 생성 헬퍼
 function mkNote(clef, pos, solfege, pitchKey, cLabel, hint) {
-  return { clef, pos, solfege, pitchKey, hz: NOTE_HZ[pitchKey], cLabel: cLabel || solfege, hint, svg: pitchStaffSvg(clef, pos) };
+  return { clef, pos, solfege, hz: NOTE_HZ[pitchKey], cLabel: cLabel || solfege, hint, svg: pitchStaffSvg(clef, pos) };
 }
-
-// 1) 도 자리 세 개 찾기
 const THREE_C_ITEMS = [
   mkNote('bass', 3, '도', 'C3', '낮은 도', '낮은음자리표 아래에서 2번째 칸은 낮은 도예요!'),
   mkNote('treble', -2, '도', 'C4', '가온 도', '높은음자리표 아래덧줄 1개는 가온 도예요!'),
   mkNote('bass', 10, '도', 'C4', '가온 도', '낮은음자리표 위덧줄 1개도 가온 도예요!'),
   mkNote('treble', 5, '도', 'C5', '높은 도', '높은음자리표 아래에서 3번째 칸은 높은 도예요!')
 ];
-
-// 2) 높은음자리표: 가온 도(C4) ~ 윗덧줄 전 솔(G5)
 const TREBLE_MID = [
   mkNote('treble', -2, '도', 'C4', null, '아래덧줄 1개는 가온 도예요!'),
-  mkNote('treble', -1, '레', 'D4', null, '첫째 줄 바로 아래 붙은 음은 레예요!'),
-  mkNote('treble', 0, '미', 'E4', null, '첫째 줄에 걸린 음은 미예요!'),
+  mkNote('treble', -1, '레', 'D4', null, '첫째 줄 바로 아래는 레예요!'),
+  mkNote('treble', 0, '미', 'E4', null, '첫째 줄은 미예요!'),
   mkNote('treble', 1, '파', 'F4', null, '첫째 칸은 파예요!'),
-  mkNote('treble', 2, '솔', 'G4', null, '둘째 줄(높은음자리표가 감싸는 줄)은 솔이에요!'),
+  mkNote('treble', 2, '솔', 'G4', null, '둘째 줄은 솔이에요!'),
   mkNote('treble', 3, '라', 'A4', null, '둘째 칸은 라예요!'),
-  mkNote('treble', 4, '시', 'B4', null, '가운데 셋째 줄은 시예요!'),
+  mkNote('treble', 4, '시', 'B4', null, '셋째 줄은 시예요!'),
   mkNote('treble', 5, '도', 'C5', null, '셋째 칸은 높은 도예요!'),
   mkNote('treble', 6, '레', 'D5', null, '넷째 줄은 레예요!'),
   mkNote('treble', 7, '미', 'E5', null, '넷째 칸은 미예요!'),
-  mkNote('treble', 8, '파', 'F5', null, '맨 위 다섯째 줄은 파예요!'),
+  mkNote('treble', 8, '파', 'F5', null, '다섯째 줄은 파예요!'),
   mkNote('treble', 9, '솔', 'G5', null, '다섯째 줄 바로 위 칸은 솔이에요!')
 ];
-
-// 3) 높은음자리표 위덧줄: 높은 도(C5) ~ 윗덧줄 3개(E6)
 const TREBLE_HIGH = [
   mkNote('treble', 5, '도', 'C5', null, '셋째 칸은 높은 도예요!'),
   mkNote('treble', 6, '레', 'D5', null, '넷째 줄은 레예요!'),
   mkNote('treble', 7, '미', 'E5', null, '넷째 칸은 미예요!'),
   mkNote('treble', 8, '파', 'F5', null, '다섯째 줄은 파예요!'),
-  mkNote('treble', 9, '솔', 'G5', null, '다섯째 줄 바로 위는 솔이에요!'),
-  mkNote('treble', 10, '라', 'A5', null, '윗덧줄 1개에 걸린 음은 라예요!'),
-  mkNote('treble', 11, '시', 'B5', null, '윗덧줄 1개 바로 위는 시예요!'),
-  mkNote('treble', 12, '도', 'C6', null, '윗덧줄 2개에 걸린 음은 아주 높은 도예요!'),
-  mkNote('treble', 13, '레', 'D6', null, '윗덧줄 2개 바로 위는 레예요!'),
-  mkNote('treble', 14, '미', 'E6', null, '윗덧줄 3개에 걸린 음은 미예요!')
+  mkNote('treble', 9, '솔', 'G5', null, '다섯째 줄 위는 솔이에요!'),
+  mkNote('treble', 10, '라', 'A5', null, '윗덧줄 1개는 라예요!'),
+  mkNote('treble', 11, '시', 'B5', null, '윗덧줄 1개 위는 시예요!'),
+  mkNote('treble', 12, '도', 'C6', null, '윗덧줄 2개는 아주 높은 도예요!'),
+  mkNote('treble', 13, '레', 'D6', null, '윗덧줄 2개 위는 레예요!'),
+  mkNote('treble', 14, '미', 'E6', null, '윗덧줄 3개는 미예요!')
 ];
-
-// 4) 높은음자리표 아래덧줄: 가온 도(C4) ~ 아래덧줄 2개(A3) (+D4, E4 포함해 헷갈리지 않게)
 const TREBLE_LOW = [
   mkNote('treble', 0, '미', 'E4', null, '첫째 줄은 미예요!'),
   mkNote('treble', -1, '레', 'D4', null, '첫째 줄 바로 아래는 레예요!'),
   mkNote('treble', -2, '도', 'C4', null, '아래덧줄 1개는 가온 도예요!'),
-  mkNote('treble', -3, '시', 'B3', null, '아래덧줄 1개 바로 아래는 시예요!'),
-  mkNote('treble', -4, '라', 'A3', null, '아래덧줄 2개에 걸린 음은 라예요!')
+  mkNote('treble', -3, '시', 'B3', null, '아래덧줄 1개 아래는 시예요!'),
+  mkNote('treble', -4, '라', 'A3', null, '아래덧줄 2개는 라예요!')
 ];
-
-// 5) 낮은음자리표 (기본 + 아래덧줄 2개~위덧줄 2개)
 const BASS_ALL = [
-  mkNote('bass', -4, '도', 'C2', null, '낮은음자리표 아래덧줄 2개는 아주 낮은 도예요!'),
+  mkNote('bass', -4, '도', 'C2', null, '낮은음자리표 아래덧줄 2개는 도예요!'),
   mkNote('bass', -3, '레', 'D2', null, '낮은음자리표 아래덧줄 1개 아래는 레예요!'),
   mkNote('bass', -2, '미', 'E2', null, '낮은음자리표 아래덧줄 1개는 미예요!'),
   mkNote('bass', -1, '파', 'F2', null, '낮은음자리표 첫째 줄 아래는 파예요!'),
@@ -452,7 +667,7 @@ const BASS_ALL = [
   mkNote('bass', 3, '도', 'C3', null, '낮은음자리표 둘째 칸은 낮은 도예요!'),
   mkNote('bass', 4, '레', 'D3', null, '낮은음자리표 셋째 줄은 레예요!'),
   mkNote('bass', 5, '미', 'E3', null, '낮은음자리표 셋째 칸은 미예요!'),
-  mkNote('bass', 6, '파', 'F3', null, '낮은음자리표 넷째 줄(점 두 개 사이)은 파예요!'),
+  mkNote('bass', 6, '파', 'F3', null, '낮은음자리표 넷째 줄은 파예요!'),
   mkNote('bass', 7, '솔', 'G3', null, '낮은음자리표 넷째 칸은 솔이에요!'),
   mkNote('bass', 8, '라', 'A3', null, '낮은음자리표 다섯째 줄은 라예요!'),
   mkNote('bass', 9, '시', 'B3', null, '낮은음자리표 다섯째 줄 위는 시예요!'),
@@ -461,12 +676,60 @@ const BASS_ALL = [
   mkNote('bass', 12, '미', 'E4', null, '낮은음자리표 위덧줄 2개는 미예요!')
 ];
 
-const SOLFEGE_ALL = ['도', '레', '미', '파', '솔', '라', '시'];
-const ALL_RHYTHM_NAMES = RHYTHM_ITEMS.map(i => i.name);
-const ALL_BEATS = ['4박자', '3박자', '2박자', '1박자', '반 박(0.5박)'];
+// ========================
+// 4. 음악기호 · 악상기호 · 조표
+// ========================
+const ART_SYMBOLS = [
+  { id:'tenuto', name:'테누토 (음 길이를 충분히)', short:'테누토', hint:'음표 위·아래 짧은 가로선(-)은 음을 끝까지 충분히 누르는 테누토예요!',
+    svg: `<svg width="200" height="120" viewBox="0 0 200 120"><line x1="80" y1="30" x2="120" y2="30" stroke="#2d2926" stroke-width="6" stroke-linecap="round"/><ellipse cx="100" cy="65" rx="14" ry="10" fill="#2d2926" transform="rotate(-18 100 65)"/><line x1="112" y1="63" x2="112" y2="110" stroke="#2d2926" stroke-width="4"/></svg>` },
+  { id:'accent', name:'악센트 (그 음을 세게)', short:'악센트', hint:'음표 위·아래 > 모양은 그 음을 특히 세게 치는 악센트예요!',
+    svg: `<svg width="200" height="120" viewBox="0 0 200 120"><path d="M82 22 L118 32 L82 42" fill="none" stroke="#2d2926" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="100" cy="70" rx="14" ry="10" fill="#2d2926" transform="rotate(-18 100 70)"/><line x1="112" y1="68" x2="112" y2="112" stroke="#2d2926" stroke-width="4"/></svg>` },
+  { id:'staccato', name:'스타카토 (짧고 가볍게)', short:'스타카토', hint:'음표 위·아래 작은 점(·)은 짧고 통통 튀듯 끊어 치는 스타카토예요!',
+    svg: `<svg width="200" height="120" viewBox="0 0 200 120"><circle cx="100" cy="30" r="6" fill="#2d2926"/><ellipse cx="100" cy="65" rx="14" ry="10" fill="#2d2926" transform="rotate(-18 100 65)"/><line x1="112" y1="63" x2="112" y2="110" stroke="#2d2926" stroke-width="4"/></svg>` },
+  { id:'fermata', name:'페르마타 / 늘임표 (충분히 길게)', short:'페르마타(늘임표)', hint:'눈썹 모양 아래 점(𝄐)은 음을 2~3배쯤 충분히 늘여 주는 페르마타(늘임표)예요!',
+    svg: `<svg width="200" height="120" viewBox="0 0 200 120"><path d="M64 72 C70 34, 130 34, 136 72" fill="none" stroke="#2d2926" stroke-width="6" stroke-linecap="round"/><circle cx="100" cy="66" r="7" fill="#2d2926"/></svg>` },
+  { id:'repeat', name:'도돌이표 (되돌아가서 반복)', short:'도돌이표', hint:'점 두 개(:)와 겹세로줄은 처음으로(또는 짝꿍 도돌이표로) 돌아가 반복하는 도돌이표예요!',
+    svg: `<svg width="200" height="120" viewBox="0 0 200 120"><line x1="60" y1="30" x2="145" y2="30" stroke="#ccc" stroke-width="2"/><line x1="60" y1="50" x2="145" y2="50" stroke="#ccc" stroke-width="2"/><line x1="60" y1="70" x2="145" y2="70" stroke="#ccc" stroke-width="2"/><line x1="60" y1="90" x2="145" y2="90" stroke="#ccc" stroke-width="2"/><circle cx="100" cy="40" r="5" fill="#2d2926"/><circle cx="100" cy="60" r="5" fill="#2d2926"/><line x1="118" y1="28" x2="118" y2="92" stroke="#2d2926" stroke-width="3"/><line x1="130" y1="28" x2="130" y2="92" stroke="#2d2926" stroke-width="9"/></svg>` },
+  { id:'dc', name:'다 카포 (맨 처음으로)', short:'D.C.(다 카포)', hint:'D.C.(Da Capo)는 곡의 맨 처음으로 돌아가라는 뜻이에요!',
+    svg: `<div class="symbol-big">D.C.</div>` },
+  { id:'ds', name:'달 세뇨 (세뇨 표시로)', short:'D.S.(달 세뇨)', hint:'D.S.(Dal Segno)는 세뇨(𝄋) 기호가 있는 곳으로 돌아가라는 뜻이에요!',
+    svg: `<div class="symbol-big">D.S.</div>` },
+  { id:'fine', name:'피네 (여기서 끝!)', short:'Fine(피네)', hint:'Fine는 여기서 곡을 마친다는 뜻이에요!',
+    svg: `<div class="symbol-big" style="font-style:italic;">Fine</div>` }
+];
+
+const DYN_SYMBOLS = [
+  { id:'pp', name:'피아니시모 (매우 여리게)', short:'pp · 매우 여리게', hint:'pp는 매우 여리게(피아니시모) 연주해요!', svg:`<div class="symbol-big" style="font-style:italic;">pp</div>` },
+  { id:'p', name:'피아노 (여리게)', short:'p · 여리게', hint:'p는 여리게(피아노) 연주해요!', svg:`<div class="symbol-big" style="font-style:italic;">p</div>` },
+  { id:'mp', name:'메조피아노 (조금 여리게)', short:'mp · 조금 여리게', hint:'mp는 조금 여리게(메조피아노) 연주해요!', svg:`<div class="symbol-big" style="font-style:italic;">mp</div>` },
+  { id:'mf', name:'메조포르테 (조금 세게)', short:'mf · 조금 세게', hint:'mf는 조금 세게(메조포르테) 연주해요!', svg:`<div class="symbol-big" style="font-style:italic;">mf</div>` },
+  { id:'f', name:'포르테 (세게)', short:'f · 세게', hint:'f는 세게(포르테) 연주해요!', svg:`<div class="symbol-big" style="font-style:italic;">f</div>` },
+  { id:'ff', name:'포르티시모 (매우 세게)', short:'ff · 매우 세게', hint:'ff는 매우 세게(포르티시모) 연주해요!', svg:`<div class="symbol-big" style="font-style:italic;">ff</div>` },
+  { id:'cresc', name:'크레센도 (점점 세게)', short:'점점 세게', hint:'벌어지는 모양(<)은 소리를 점점 세게 키우는 크레센도예요!',
+    svg:`<svg width="200" height="100" viewBox="0 0 200 100"><path d="M40 50 L160 25 M40 50 L160 75" stroke="#2d2926" stroke-width="5" stroke-linecap="round"/></svg>` },
+  { id:'decresc', name:'데크레센도 (점점 여리게)', short:'점점 여리게', hint:'오므라드는 모양(>)은 소리를 점점 여리게 줄이는 데크레센도예요!',
+    svg:`<svg width="200" height="100" viewBox="0 0 200 100"><path d="M40 25 L160 50 M40 75 L160 50" stroke="#2d2926" stroke-width="5" stroke-linecap="round"/></svg>` }
+];
+
+function keyStaffSvg(accText) {
+  const lines = [44, 58, 72, 86, 100].map(y =>
+    `<line x1="25" y1="${y}" x2="255" y2="${y}" stroke="#bfb4a8" stroke-width="2"/>`
+  ).join('');
+  const clef = `<g transform="translate(36, 28) scale(0.95)"><path d="M22 86 C12 86, 8 78, 13 72 C17 67, 24 71, 22 77 C20 82, 13 82, 13 75 M22 86 C32 86, 36 74, 30 62 C25 53, 14 54, 12 63 C10 71, 18 77, 26 73 C33 69, 34 57, 25 48 C18 41, 16 26, 23 12 C27 4, 31 8, 29 18 L19 95 C18 103, 11 105, 8 100" fill="none" stroke="#3c342e" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></g>`;
+  return `<svg width="260" height="135" viewBox="0 0 280 140" xmlns="http://www.w3.org/2000/svg">${lines}${clef}<text x="105" y="79" font-size="28" font-weight="800" fill="#d9534f">${accText}</text></svg>`;
+}
+const KEY_SIGS = [
+  { name:'다장조 (C)', hint:'♯이나 ♭이 아무것도 없으면 다장조(C Major)예요!', svg:keyStaffSvg('조표 없음') },
+  { name:'사장조 (G)', hint:'♯이 1개(파♯) 붙으면 사장조(G Major)예요!', svg:keyStaffSvg('♯ × 1 (파)') },
+  { name:'라장조 (D)', hint:'♯이 2개(파·도) 붙으면 라장조(D Major)예요!', svg:keyStaffSvg('♯ × 2 (파·도)') },
+  { name:'가장조 (A)', hint:'♯이 3개(파·도·솔) 붙으면 가장조(A Major)예요!', svg:keyStaffSvg('♯ × 3 (파·도·솔)') },
+  { name:'바장조 (F)', hint:'♭이 1개(시♭) 붙으면 바장조(F Major)예요!', svg:keyStaffSvg('♭ × 1 (시)') },
+  { name:'내림나장조 (B♭)', hint:'♭이 2개(시·미) 붙으면 내림나장조(B♭ Major)예요!', svg:keyStaffSvg('♭ × 2 (시·미)') },
+  { name:'내림마장조 (E♭)', hint:'♭이 3개(시·미·라) 붙으면 내림마장조(E♭ Major)예요!', svg:keyStaffSvg('♭ × 3 (시·미·라)') }
+];
 
 // ========================
-// 3. 상태 및 오디오
+// 5. 오디오 & 공통 상태
 // ========================
 let currentTab = 'rhythm';
 let currentGameType = 'rhythm';
@@ -483,127 +746,100 @@ function getCtx() {
 }
 function playTone(freq, startTime, duration, type='triangle', vol=0.25) {
   const ctx = getCtx();
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = type;
-  osc.frequency.setValueAtTime(freq, startTime);
+  const osc = ctx.createOscillator(), gain = ctx.createGain();
+  osc.type = type; osc.frequency.setValueAtTime(freq, startTime);
   gain.gain.setValueAtTime(vol, startTime);
   gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-  osc.start(startTime);
-  osc.stop(startTime + duration);
+  osc.connect(gain); gain.connect(ctx.destination);
+  osc.start(startTime); osc.stop(startTime + duration);
 }
 function sfxCorrect() {
-  const ctx = getCtx(); const now = ctx.currentTime;
-  playTone(523.25, now, 0.14, 'triangle', 0.25);
-  playTone(659.25, now + 0.1, 0.14, 'triangle', 0.25);
-  playTone(783.99, now + 0.2, 0.28, 'triangle', 0.28);
+  const c = getCtx(), n = c.currentTime;
+  playTone(523.25, n, 0.14); playTone(659.25, n+0.1, 0.14); playTone(783.99, n+0.2, 0.28);
 }
 function sfxWrong() {
-  const ctx = getCtx(); const now = ctx.currentTime;
-  playTone(260, now, 0.18, 'sine', 0.2);
-  playTone(220, now + 0.15, 0.25, 'sine', 0.2);
+  const c = getCtx(), n = c.currentTime;
+  playTone(260, n, 0.18, 'sine', 0.2); playTone(220, n+0.15, 0.25, 'sine', 0.2);
 }
 function playCurrentSound() {
-  const q = questions[qIndex];
-  const ctx = getCtx(); const now = ctx.currentTime;
+  const q = questions[qIndex], c = getCtx(), n = c.currentTime;
   if (currentGameType === 'rhythm') {
-    const beatSec = 0.55;
-    if (q.item.kind === '음표') {
-      playTone(523.25, now, q.item.beatsNum * beatSec, 'triangle', 0.25);
-    } else {
-      const count = Math.max(1, Math.ceil(q.item.beatsNum));
-      for (let i = 0; i < count; i++) playTone(880, now + i * beatSec, 0.06, 'sine', 0.12);
-    }
-  } else {
-    playTone(q.item.hz, now, 0.75, 'triangle', 0.3);
+    const b = 0.55;
+    if (q.item.kind === '음표') playTone(523.25, n, q.item.beatsNum * b);
+    else for (let i = 0; i < Math.max(1, Math.ceil(q.item.beatsNum)); i++) playTone(880, n+i*b, 0.06, 'sine', 0.12);
+  } else if (currentGameType === 'pitch') {
+    playTone(q.item.hz, n, 0.75);
   }
 }
 
+function showOnly(id) {
+  ['home-screen','game-screen','memory-screen','tap-screen','ranking-screen','result-screen']
+    .forEach(s => document.getElementById(s).classList.toggle('hidden', s !== id));
+}
+function goHome() {
+  if (tapTimer) { clearInterval(tapTimer); tapTimer = null; }
+  showOnly('home-screen');
+}
 function switchTab(tab) {
   currentTab = tab;
-  document.getElementById('tab-rhythm').classList.toggle('active', tab === 'rhythm');
-  document.getElementById('tab-pitch').classList.toggle('active', tab === 'pitch');
-  document.getElementById('rhythm-modes').classList.toggle('hidden', tab !== 'rhythm');
-  document.getElementById('pitch-modes').classList.toggle('hidden', tab !== 'pitch');
+  ['rhythm','pitch','symbol','memory'].forEach(t => {
+    document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+    document.getElementById(t + '-modes').classList.toggle('hidden', t !== tab);
+  });
 }
-
 function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
 
-function buildRhythmQuestions(mode) {
-  const list = [];
-  for (let i = 0; i < 10; i++) {
-    const item = RHYTHM_ITEMS[Math.floor(Math.random() * RHYTHM_ITEMS.length)];
-    let askType = mode === 'mix' ? ['kind', 'name', 'beat'][i % 3] : mode;
-    let prompt = '', correct = '', options = [];
-    if (askType === 'kind') {
-      prompt = '이 친구는 음표일까요, 쉼표일까요?';
-      correct = item.kind;
-      options = ['음표 🎵', '쉼표 🤫'];
-    } else if (askType === 'name') {
-      prompt = '이 기호의 이름은 무엇일까요?';
-      correct = item.name;
-      options = shuffle([correct, ...shuffle(ALL_RHYTHM_NAMES.filter(n => n !== correct)).slice(0, 3)]);
-    } else {
-      prompt = '이 기호는 몇 박자일까요?';
-      correct = item.beat;
-      options = shuffle([correct, ...shuffle(ALL_BEATS.filter(b => b !== correct)).slice(0, 3)]);
-    }
-    list.push({ item, prompt, correct, options, colClass: '' });
-  }
-  return list;
-}
+// ========================
+// 6. 퀴즈 엔진 (리듬 / 계이름 / 기호·조표)
+// ========================
+const SOLFEGE_ALL = ['도','레','미','파','솔','라','시'];
+const ALL_RHYTHM_NAMES = RHYTHM_ITEMS.map(i => i.name);
+const ALL_BEATS = ['4박자','3박자','2박자','1박자','반 박(0.5박)'];
 
-function buildPitchQuestions(mode) {
-  let pool = [];
-  if (mode === 'three_c') pool = THREE_C_ITEMS;
-  else if (mode === 'treble_mid') pool = TREBLE_MID;
-  else if (mode === 'treble_high') pool = TREBLE_HIGH;
-  else if (mode === 'treble_low') pool = TREBLE_LOW;
-  else if (mode === 'bass_all') pool = BASS_ALL;
-  else pool = [...TREBLE_MID, ...TREBLE_HIGH, ...TREBLE_LOW, ...BASS_ALL];
-
-  const list = [];
-  for (let i = 0; i < 10; i++) {
-    const item = pool[Math.floor(Math.random() * pool.length)];
-    if (mode === 'three_c') {
-      list.push({
-        item,
-        prompt: '어느 자리의 "도"일까요?',
-        correct: item.cLabel,
-        options: ['낮은 도', '가온 도', '높은 도'],
-        colClass: 'three-col'
-      });
-    } else {
-      list.push({
-        item,
-        prompt: '이 음표의 계이름은 무엇일까요?',
-        correct: item.solfege,
-        options: SOLFEGE_ALL,
-        colClass: 'four-col'
-      });
-    }
-  }
-  return list;
-}
-
-function startGame(gameType, mode) {
+function startQuiz(gameType, mode) {
   currentGameType = gameType;
   currentMode = mode;
-  questions = gameType === 'rhythm' ? buildRhythmQuestions(mode) : buildPitchQuestions(mode);
-  qIndex = 0;
-  score = 0;
-  document.getElementById('home-screen').classList.add('hidden');
-  document.getElementById('result-screen').classList.add('hidden');
-  document.getElementById('game-screen').classList.remove('hidden');
-  renderQuestion();
-}
+  questions = [];
 
-function goHome() {
-  document.getElementById('game-screen').classList.add('hidden');
-  document.getElementById('result-screen').classList.add('hidden');
-  document.getElementById('home-screen').classList.remove('hidden');
+  if (gameType === 'rhythm') {
+    for (let i = 0; i < 10; i++) {
+      const item = RHYTHM_ITEMS[Math.floor(Math.random() * RHYTHM_ITEMS.length)];
+      const t = mode === 'mix' ? ['kind','name','beat'][i % 3] : mode;
+      if (t === 'kind') questions.push({ item, prompt:'이 친구는 음표일까요, 쉼표일까요?', correct:item.kind, options:['음표 🎵','쉼표 🤫'], colClass:'' });
+      else if (t === 'name') questions.push({ item, prompt:'이 기호의 이름은 무엇일까요?', correct:item.name, options:shuffle([item.name, ...shuffle(ALL_RHYTHM_NAMES.filter(n=>n!==item.name)).slice(0,3)]), colClass:'' });
+      else questions.push({ item, prompt:'이 기호는 몇 박자일까요?', correct:item.beat, options:shuffle([item.beat, ...shuffle(ALL_BEATS.filter(b=>b!==item.beat)).slice(0,3)]), colClass:'' });
+    }
+  } else if (gameType === 'pitch') {
+    let pool = mode === 'three_c' ? THREE_C_ITEMS
+      : mode === 'treble_mid' ? TREBLE_MID
+      : mode === 'treble_high' ? TREBLE_HIGH
+      : mode === 'treble_low' ? TREBLE_LOW
+      : mode === 'bass_all' ? BASS_ALL
+      : [...TREBLE_MID, ...TREBLE_HIGH, ...TREBLE_LOW, ...BASS_ALL];
+    for (let i = 0; i < 10; i++) {
+      const item = pool[Math.floor(Math.random() * pool.length)];
+      if (mode === 'three_c') questions.push({ item, prompt:'어느 자리의 "도"일까요?', correct:item.cLabel, options:['낮은 도','가온 도','높은 도'], colClass:'three-col' });
+      else questions.push({ item, prompt:'이 음표의 계이름은 무엇일까요?', correct:item.solfege, options:SOLFEGE_ALL, colClass:'four-col' });
+    }
+  } else if (gameType === 'symbol') {
+    let pool = mode === 'art' ? ART_SYMBOLS : mode === 'dyn' ? DYN_SYMBOLS : mode === 'key' ? KEY_SIGS : [...ART_SYMBOLS, ...DYN_SYMBOLS, ...KEY_SIGS];
+    for (let i = 0; i < 10; i++) {
+      const item = pool[Math.floor(Math.random() * pool.length)];
+      const samePool = ART_SYMBOLS.includes(item) ? ART_SYMBOLS : DYN_SYMBOLS.includes(item) ? DYN_SYMBOLS : KEY_SIGS;
+      const others = shuffle(samePool.filter(x => x.name !== item.name)).slice(0, 3).map(x => x.name);
+      questions.push({
+        item,
+        prompt: samePool === KEY_SIGS ? '이 조표는 무슨 장조일까요?' : '이 음악 기호의 뜻은 무엇일까요?',
+        correct: item.name,
+        options: shuffle([item.name, ...others]),
+        colClass: ''
+      });
+    }
+  }
+
+  qIndex = 0; score = 0;
+  showOnly('game-screen');
+  renderQuestion();
 }
 
 function renderQuestion() {
@@ -613,8 +849,9 @@ function renderQuestion() {
   document.getElementById('score-pill').textContent = `⭐ ${score}점`;
   document.getElementById('q-prompt').textContent = q.prompt;
   document.getElementById('svg-wrap').innerHTML = q.item.svg;
-  document.getElementById('sound-btn').textContent =
-    currentGameType === 'rhythm' ? '🔊 박자 소리 들어보기' : '🎹 피아노 음 높이 들어보기';
+  const sb = document.getElementById('sound-btn');
+  sb.classList.toggle('hidden', currentGameType === 'symbol');
+  sb.textContent = currentGameType === 'rhythm' ? '🔊 박자 소리 들어보기' : '🎹 피아노 음 높이 들어보기';
   document.getElementById('feedback').classList.add('hidden');
   document.getElementById('next-btn').classList.add('hidden');
 
@@ -634,26 +871,23 @@ function selectAnswer(btn, opt) {
   if (answered) return;
   answered = true;
   const q = questions[qIndex];
-  const cleanOpt = opt.replace(' 🎵', '').replace(' 🤫', '');
+  const cleanOpt = opt.replace(' 🎵','').replace(' 🤫','');
   const isRight = cleanOpt === q.correct;
 
   document.querySelectorAll('#choices .choice-btn').forEach(b => {
     b.disabled = true;
-    const cleanB = b.textContent.replace(' 🎵', '').replace(' 🤫', '');
+    const cleanB = b.textContent.replace(' 🎵','').replace(' 🤫','');
     if (cleanB === q.correct) b.classList.add('correct');
   });
 
   const fb = document.getElementById('feedback');
   fb.classList.remove('hidden', 'fb-ok', 'fb-no');
-
   if (isRight) {
     score += 10;
     document.getElementById('score-pill').textContent = `⭐ ${score}점`;
     btn.classList.add('correct');
     fb.classList.add('fb-ok');
-    fb.textContent = currentGameType === 'rhythm'
-      ? `정답! 🎉 ${q.item.name} (${q.item.beat})`
-      : `정답! 🎉 ${q.item.cLabel || q.item.solfege}`;
+    fb.textContent = `정답! 🎉 ${q.item.name || q.item.cLabel || q.item.solfege}`;
     sfxCorrect();
   } else {
     btn.classList.add('wrong');
@@ -661,34 +895,273 @@ function selectAnswer(btn, opt) {
     fb.textContent = `아쉬워요! ${q.item.hint}`;
     sfxWrong();
   }
-
-  if (currentGameType === 'pitch') {
-    setTimeout(() => playCurrentSound(), 180);
-  }
-
-  const nextBtn = document.getElementById('next-btn');
-  nextBtn.textContent = qIndex === questions.length - 1 ? '결과 보기 🏆' : '다음 문제 →';
-  nextBtn.classList.remove('hidden');
+  if (currentGameType === 'pitch') setTimeout(() => playCurrentSound(), 180);
+  const nb = document.getElementById('next-btn');
+  nb.textContent = qIndex === questions.length - 1 ? '결과 보기 🏆' : '다음 문제 →';
+  nb.classList.remove('hidden');
 }
 
 function nextQuestion() {
-  if (qIndex < questions.length - 1) {
-    qIndex++;
-    renderQuestion();
+  if (qIndex < questions.length - 1) { qIndex++; renderQuestion(); }
+  else showQuizResult();
+}
+
+function showQuizResult() {
+  const student = getCurrentStudent();
+  saveStudentScore(student, score);
+  showOnly('result-screen');
+  document.getElementById('trophy-icon').textContent = score >= 80 ? '🏆' : score >= 50 ? '🌟' : '🌱';
+  document.getElementById('result-title').textContent = `${student} 최고!`;
+  document.getElementById('result-desc').textContent = `10문제 중 ${score / 10}문제를 맞혀서 ${score}점을 기록했어요!`;
+}
+
+function retryLast() {
+  if (currentGameType === 'memory') startMemory(memTheme, memPlayerCount);
+  else startQuiz(currentGameType, currentMode);
+}
+
+// ========================
+// 7. 메모리 카드 (1인 / 2인 대결)
+// ========================
+let memTheme = 'rhythm_name', memPlayerCount = 1;
+let memCards = [], memFlipped = [], memLocked = false;
+let memTurn = 0, memScores = [0, 0], memMoves = 0, memMatched = 0;
+let memNames = ['', ''];
+
+function startMemory(theme, players) {
+  currentGameType = 'memory';
+  memTheme = theme; memPlayerCount = players;
+  memNames = [getCurrentStudent(), document.getElementById('p2-select').value];
+  if (players === 2 && memNames[0] === memNames[1]) memNames[1] = memNames[1] + '2';
+
+  let pairs = [];
+  if (theme === 'rhythm_name') {
+    const pick = shuffle(RHYTHM_ITEMS).slice(0, 6);
+    pick.forEach(it => {
+      pairs.push({ key: it.id, type:'svg', html: it.svg });
+      pairs.push({ key: it.id, type:'txt', html: it.name });
+    });
+  } else if (theme === 'rhythm_beat') {
+    const pick = shuffle(RHYTHM_ITEMS.filter(x => x.kind === '음표' || x.id === 'quarter_rest' || x.id === 'half_rest')).slice(0, 6);
+    // 박자 중복 방지를 위해 고유 박자 5개 + 1개
+    const uniq = [];
+    const seenBeat = new Set();
+    for (const it of shuffle(RHYTHM_ITEMS)) {
+      if (!seenBeat.has(it.beat)) { seenBeat.add(it.beat); uniq.push(it); }
+      if (uniq.length === 5) break;
+    }
+    uniq.forEach(it => {
+      pairs.push({ key: it.beat, type:'svg', html: it.svg });
+      pairs.push({ key: it.beat, type:'txt', html: it.beat });
+    });
   } else {
-    showResult();
+    const pick = shuffle([...ART_SYMBOLS, ...DYN_SYMBOLS]).slice(0, 6);
+    pick.forEach(it => {
+      pairs.push({ key: it.id, type:'svg', html: it.svg });
+      pairs.push({ key: it.id, type:'txt', html: it.short });
+    });
+  }
+
+  memCards = shuffle(pairs).map((c, idx) => ({ ...c, idx, open:false, done:false }));
+  memFlipped = []; memLocked = false; memTurn = 0; memScores = [0, 0]; memMoves = 0; memMatched = 0;
+  showOnly('memory-screen');
+  renderMemory();
+}
+
+function renderMemory() {
+  const totalPairs = memCards.length / 2;
+  document.getElementById('mem-moves-pill').textContent = `시도 ${memMoves}회`;
+  document.getElementById('mem-left-pill').textContent = `남은 짝 ${totalPairs - memMatched}개`;
+
+  const pDiv = document.getElementById('mem-players');
+  if (memPlayerCount === 1) {
+    pDiv.innerHTML = `<div class="mem-pbox active-turn">🎹 ${memNames[0]} 혼자 도전 중 (${memMatched}/${totalPairs}쌍)</div>`;
+  } else {
+    pDiv.innerHTML = `
+      <div class="mem-pbox ${memTurn===0?'active-turn':''}">1P ${memNames[0]}: ${memScores[0]}쌍</div>
+      <div class="mem-pbox ${memTurn===1?'active-turn':''}">2P ${memNames[1]}: ${memScores[1]}쌍</div>
+    `;
+  }
+
+  const grid = document.getElementById('mem-grid');
+  grid.innerHTML = '';
+  memCards.forEach((c, i) => {
+    const el = document.createElement('div');
+    el.className = 'mem-card' + (c.open ? ' flipped' : '') + (c.done ? ' matched' : '');
+    el.innerHTML = (c.open || c.done) ? c.html : '🎵';
+    el.onclick = () => flipMemCard(i);
+    grid.appendChild(el);
+  });
+}
+
+function flipMemCard(i) {
+  if (memLocked) return;
+  const card = memCards[i];
+  if (card.open || card.done) return;
+
+  card.open = true;
+  memFlipped.push(i);
+  renderMemory();
+
+  if (memFlipped.length === 2) {
+    memLocked = true;
+    memMoves++;
+    const [a, b] = memFlipped.map(idx => memCards[idx]);
+    const fb = document.getElementById('mem-feedback');
+    fb.classList.remove('hidden', 'fb-ok', 'fb-no');
+
+    if (a.key === b.key) {
+      a.done = true; b.done = true;
+      memMatched++;
+      memScores[memTurn]++;
+      sfxCorrect();
+      fb.classList.add('fb-ok');
+      fb.textContent = memPlayerCount === 2 ? `정답! ${memNames[memTurn]} 님 한 번 더! 🎉` : `짝 맞았어요! 🎉`;
+      memFlipped = [];
+      memLocked = false;
+      renderMemory();
+
+      if (memMatched === memCards.length / 2) {
+        setTimeout(() => {
+          if (memPlayerCount === 1) {
+            const pts = Math.max(40, 120 - memMoves * 5);
+            saveStudentScore(memNames[0], pts);
+            showOnly('result-screen');
+            document.getElementById('trophy-icon').textContent = '🃏';
+            document.getElementById('result-title').textContent = `${memNames[0]} 클리어!`;
+            document.getElementById('result-desc').textContent = `${memMoves}번 만에 모든 짝을 찾아 ${pts}점을 얻었어요!`;
+          } else {
+            saveStudentScore(memNames[0], memScores[0] * 15);
+            saveStudentScore(memNames[1], memScores[1] * 15);
+            showOnly('result-screen');
+            document.getElementById('trophy-icon').textContent = '🏆';
+            const win = memScores[0] === memScores[1] ? '무승부!' : (memScores[0] > memScores[1] ? `${memNames[0]} 승리!` : `${memNames[1]} 승리!`);
+            document.getElementById('result-title').textContent = win;
+            document.getElementById('result-desc').textContent = `${memNames[0]} ${memScores[0]}쌍 vs ${memNames[1]} ${memScores[1]}쌍`;
+          }
+        }, 650);
+      }
+    } else {
+      sfxWrong();
+      fb.classList.add('fb-no');
+      fb.textContent = memPlayerCount === 2 ? `아쉬워요! 다음 친구 차례 👉` : `다른 짝이에요! 다시 기억해 봐요`;
+      setTimeout(() => {
+        a.open = false; b.open = false;
+        memFlipped = [];
+        if (memPlayerCount === 2) memTurn = 1 - memTurn;
+        memLocked = false;
+        renderMemory();
+      }, 950);
+    }
   }
 }
 
-function showResult() {
-  document.getElementById('game-screen').classList.add('hidden');
-  document.getElementById('result-screen').classList.remove('hidden');
-  const icon = score >= 80 ? '🏆' : score >= 50 ? '🌟' : '🌱';
-  const title = score >= 80 ? '최고의 음악 박사님!' : score >= 50 ? '아주 잘했어요!' : '조금만 더 연습해 봐요!';
-  document.getElementById('trophy-icon').textContent = icon;
-  document.getElementById('result-title').textContent = title;
-  document.getElementById('result-desc').textContent = `10문제 중 ${score / 10}문제를 맞혀서 총 ${score}점을 받았어요!`;
+// ========================
+// 8. 박자 두드리기 미니게임
+// ========================
+const TAP_PATTERNS = [
+  { label:'4분음표 × 4 (쿵-쿵-쿵-쿵)', beats:[0, 1, 2, 3], svg: rhythmStaffSvg(`<text x="140" y="88" text-anchor="middle" font-size="24" font-weight="800" fill="#2d2926">♩   ♩   ♩   ♩</text>`) },
+  { label:'2분음표 × 2 (하아-나, 두우-울)', beats:[0, 2], svg: rhythmStaffSvg(`<text x="140" y="88" text-anchor="middle" font-size="24" font-weight="800" fill="#2d2926">𝅗𝅥        𝅗𝅥</text>`) },
+  { label:'4분 + 4분 + 2분 (따-따-따아)', beats:[0, 1, 2], svg: rhythmStaffSvg(`<text x="140" y="88" text-anchor="middle" font-size="24" font-weight="800" fill="#2d2926">♩   ♩   𝅗𝅥</text>`) }
+];
+let tapIdx = 0, tapCombo = 0, tapTimer = null, tapStartMs = 0, tapExpected = [], tapHits = [];
+
+function openTapGame() {
+  tapIdx = 0; tapCombo = 0;
+  showOnly('tap-screen');
+  renderTapPattern();
 }
+function renderTapPattern() {
+  const p = TAP_PATTERNS[tapIdx % TAP_PATTERNS.length];
+  document.getElementById('tap-score-pill').textContent = `콤보 ${tapCombo}`;
+  document.getElementById('tap-prompt').textContent = p.label;
+  document.getElementById('tap-svg').innerHTML = p.svg;
+  document.getElementById('tap-feedback').classList.add('hidden');
+}
+function startTapRound() {
+  if (tapTimer) clearInterval(tapTimer);
+  const c = getCtx(), beatMs = 600;
+  const dots = document.querySelectorAll('#beat-dots .beat-dot');
+  let step = 0;
+  tapHits = [];
+  const p = TAP_PATTERNS[tapIdx % TAP_PATTERNS.length];
+  tapExpected = p.beats;
+  tapStartMs = performance.now() + 4 * beatMs;
+
+  const fb = document.getElementById('tap-feedback');
+  fb.classList.remove('hidden', 'fb-ok', 'fb-no');
+  fb.textContent = '예비박 하나, 둘, 셋, 넷 듣고 시작!';
+
+  function tick() {
+    dots.forEach((d, idx) => d.classList.toggle('lit', idx === (step % 4)));
+    playTone(step < 4 ? 880 : 660, c.currentTime, 0.07, 'sine', 0.16);
+    if (step === 4) fb.textContent = '지금! 리듬대로 톡톡 쳐 보세요 🥁';
+    if (step === 8) {
+      clearInterval(tapTimer); tapTimer = null;
+      dots.forEach(d => d.classList.remove('lit'));
+      gradeTapRound();
+    }
+    step++;
+  }
+  tick();
+  tapTimer = setInterval(tick, beatMs);
+}
+function onTapPad() {
+  const c = getCtx();
+  playTone(523.25, c.currentTime, 0.12, 'triangle', 0.25);
+  if (tapStartMs > 0) tapHits.push((performance.now() - tapStartMs) / 600);
+}
+function gradeTapRound() {
+  const fb = document.getElementById('tap-feedback');
+  fb.classList.remove('hidden', 'fb-ok', 'fb-no');
+  let ok = tapHits.length === tapExpected.length;
+  if (ok) {
+    for (let i = 0; i < tapExpected.length; i++) {
+      if (Math.abs(tapHits[i] - tapExpected[i]) > 0.42) ok = false;
+    }
+  }
+  if (ok) {
+    tapCombo++;
+    sfxCorrect();
+    saveStudentScore(getCurrentStudent(), 15);
+    fb.classList.add('fb-ok');
+    fb.textContent = `완벽한 박자! 🎉 (+15점) 다음 패턴으로 넘어가요!`;
+    tapIdx++;
+    setTimeout(renderTapPattern, 1300);
+  } else {
+    tapCombo = 0;
+    sfxWrong();
+    fb.classList.add('fb-no');
+    fb.textContent = `박자가 조금 어긋났어요! (${tapHits.length}번 침 / 정답 ${tapExpected.length}번) 다시 도전!`;
+  }
+  document.getElementById('tap-score-pill').textContent = `콤보 ${tapCombo}`;
+}
+
+// ========================
+// 9. 명예의 전당
+// ========================
+function openRanking() {
+  showOnly('ranking-screen');
+  const data = JSON.parse(localStorage.getItem('goun_records') || '{}');
+  const entries = Object.entries(data).sort((a, b) => b[1].total - a[1].total);
+  const list = document.getElementById('rank-list');
+  if (!entries.length) {
+    list.innerHTML = '<div class="rank-row"><span>아직 기록이 없어요! 첫 게임을 시작해 보세요 🎹</span></div>';
+    return;
+  }
+  list.innerHTML = entries.map(([name, info], idx) => {
+    const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}위`;
+    return `<div class="rank-row"><span>${medal} ${name}</span><span>총 ${info.total}점 (최고 ${info.best}점 · ${info.plays}회)</span></div>`;
+  }).join('');
+}
+function clearRecords() {
+  if (confirm('이 기기에 저장된 모든 학생 점수를 초기화할까요?')) {
+    localStorage.removeItem('goun_records');
+    openRanking();
+  }
+}
+
+initStudentSelects();
 </script>
 </body>
 </html>
