@@ -298,6 +298,128 @@
     font-size: 14px; font-weight: 700;
   }
 
+  .char-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    background: #fff6fa;
+    border: 2px solid #f5d0e0;
+    border-radius: 16px;
+    padding: 7px 10px;
+    margin-bottom: 12px;
+  }
+  .char-bar-label { font-size: 12.5px; font-weight: 800; color: #7a4258; white-space: nowrap; }
+  .char-picks { display: flex; gap: 5px; flex: 1; justify-content: flex-end; flex-wrap: wrap; }
+  .char-pick-btn {
+    border: 2px solid #ecd5df;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 4px 8px;
+    font-size: 12.5px;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .char-pick-btn.active { border-color: #ff7aa8; background: #ffe8f1; color: #b8295c; }
+
+  .mascot-bubble {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .mascot-svg { width: 52px; height: 52px; flex-shrink: 0; }
+  .mascot-svg.bounce { animation: mbounce 0.45s ease; }
+  @keyframes mbounce { 0%,100%{transform:translateY(0)} 40%{transform:translateY(-8px) scale(1.08)} }
+
+  .mode-btn.locked {
+    opacity: 0.56;
+    background: #f5f2ef;
+    border-color: #e2dbd4;
+  }
+  .mode-btn.locked:hover { transform: none; border-color: #e2dbd4; background: #f5f2ef; }
+  .unlock-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+  }
+  .teacher-unlock-btn {
+    background: none;
+    border: 1.5px dashed #d6c5b3;
+    color: #8c7b6b;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 99px;
+    cursor: pointer;
+  }
+
+  /* ARCADE VS GAUGE */
+  .vs-arena {
+    background: linear-gradient(180deg, #241e2e, #362d47);
+    border-radius: 18px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    color: #fff;
+    border: 2.5px solid #ffd166;
+  }
+  .vs-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 900;
+  }
+  .vs-fighter { display: flex; align-items: center; gap: 5px; }
+  .vs-fighter.active-fighter { color: #ffd166; text-shadow: 0 0 8px rgba(255,209,102,0.5); }
+  .vs-badge {
+    background: #ff4d6d;
+    color: #fff;
+    font-size: 11.5px;
+    font-weight: 900;
+    padding: 2px 9px;
+    border-radius: 99px;
+    letter-spacing: 1px;
+  }
+  .vs-gauge-track {
+    height: 16px;
+    background: #17131f;
+    border-radius: 99px;
+    overflow: hidden;
+    display: flex;
+    border: 2px solid #594e70;
+  }
+  .vs-bar-p1 {
+    background: linear-gradient(90deg, #38bdf8, #3b82f6);
+    height: 100%;
+    transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .vs-bar-p2 {
+    background: linear-gradient(90deg, #f43f5e, #fb7185);
+    height: 100%;
+    transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .wrong-box {
+    text-align: left;
+    background: #fff8f6;
+    border: 2px solid #f5d3cc;
+    border-radius: 16px;
+    padding: 10px 12px;
+    margin-top: 10px;
+    font-size: 13px;
+    max-height: 220px;
+    overflow-y: auto;
+  }
+  .wrong-box h3 { font-size: 13.5px; color: #b83b2b; margin-bottom: 6px; }
+  .wrong-item { padding: 4px 0; border-bottom: 1px dashed #eed8d3; line-height: 1.4; }
+  .wrong-item:last-child { border-bottom: none; }
+
   .hidden { display: none; }
   .trophy { font-size: 58px; margin: 8px 0; }
 </style>
@@ -318,6 +440,11 @@
       <select id="student-select" class="player-select" onchange="onStudentChange()"></select>
     </div>
 
+    <div class="char-bar">
+      <span class="char-bar-label">내 캐릭터</span>
+      <div class="char-picks" id="char-picks"></div>
+    </div>
+
     <div class="tab-row">
       <button class="tab-btn active" id="tab-rhythm" onclick="switchTab('rhythm')">🥁 리듬</button>
       <button class="tab-btn" id="tab-pitch" onclick="switchTab('pitch')">🎼 계이름</button>
@@ -327,51 +454,51 @@
 
     <!-- 1. 리듬 -->
     <div id="rhythm-modes" class="mode-grid">
-      <button class="mode-btn" onclick="startQuiz('rhythm', 'kind')">
+      <button class="mode-btn" data-lock="rhythm:0" onclick="tryStartQuiz('rhythm', 'kind', 0)">
         <div class="mode-title">1단계 · 음표일까? 쉼표일까?</div>
         <div class="mode-desc">소리를 내는 '음표'와 쉬어가는 '쉼표'를 구별해요!</div>
       </button>
-      <button class="mode-btn" onclick="startQuiz('rhythm', 'name')">
+      <button class="mode-btn" data-lock="rhythm:1" onclick="tryStartQuiz('rhythm', 'name', 1)">
         <div class="mode-title">2단계 · 음표·쉼표 이름 맞히기</div>
         <div class="mode-desc">온음표, 2분음표, 4분음표, 8분음표와 쉼표 이름을 골라요!</div>
       </button>
-      <button class="mode-btn" onclick="startQuiz('rhythm', 'beat')">
+      <button class="mode-btn" data-lock="rhythm:2" onclick="tryStartQuiz('rhythm', 'beat', 2)">
         <div class="mode-title">3단계 · 몇 박자일까요?</div>
         <div class="mode-desc">반 박(0.5박)부터 4박까지 박자 수를 맞혀요!</div>
       </button>
-      <button class="mode-btn" onclick="startQuiz('rhythm', 'mix')">
+      <button class="mode-btn" data-lock="rhythm:3" onclick="tryStartQuiz('rhythm', 'mix', 3)">
         <div class="mode-title">⭐ 4단계 · 리듬 종합 왕중왕전</div>
         <div class="mode-desc">음표·쉼표 구별 + 이름 + 박자가 섞여서 나와요!</div>
       </button>
       <button class="mode-btn" onclick="openTapGame()">
-        <div class="mode-title">🥁 보너스 · 박자 직접 두드리기!</div>
-        <div class="mode-desc">메트로놈 소리에 맞춰 리듬 카드를 톡톡 쳐 보세요!</div>
+        <div class="mode-title">🥁 보너스 · 박자 직접 두드리기! (8문제)</div>
+        <div class="mode-desc">메트로놈 소리에 맞춰 톡! 치거나 길게 꾹~ 눌러 보세요!</div>
       </button>
     </div>
 
     <!-- 2. 계이름 -->
     <div id="pitch-modes" class="mode-grid hidden">
-      <button class="mode-btn" onclick="startQuiz('pitch', 'three_c')">
+      <button class="mode-btn" data-lock="pitch:0" onclick="tryStartQuiz('pitch', 'three_c', 0)">
         <div class="mode-title">1단계 · 도 자리 세 개 찾기</div>
         <div class="mode-desc">낮은 도 · 가온 도 · 높은 도 위치를 정확히 구별해요!</div>
       </button>
-      <button class="mode-btn" onclick="startQuiz('pitch', 'treble_mid')">
+      <button class="mode-btn" data-lock="pitch:1" onclick="tryStartQuiz('pitch', 'treble_mid', 1)">
         <div class="mode-title">2단계 · 높은음자리표 (가온 도 ~ 윗덧줄 전)</div>
         <div class="mode-desc">가온 도부터 오선 맨 위 솔까지 기본 계이름을 익혀요!</div>
       </button>
-      <button class="mode-btn" onclick="startQuiz('pitch', 'treble_high')">
+      <button class="mode-btn" data-lock="pitch:2" onclick="tryStartQuiz('pitch', 'treble_high', 2)">
         <div class="mode-title">3단계 · 높은음자리표 위덧줄 (높은 도 ~ 윗덧줄 3개)</div>
         <div class="mode-desc">높은 도부터 윗덧줄 3개(미)까지 높은 음을 읽어요!</div>
       </button>
-      <button class="mode-btn" onclick="startQuiz('pitch', 'treble_low')">
+      <button class="mode-btn" data-lock="pitch:3" onclick="tryStartQuiz('pitch', 'treble_low', 3)">
         <div class="mode-title">4단계 · 높은음자리표 아래덧줄 (가온 도 ~ 아래덧줄 2개)</div>
         <div class="mode-desc">가온 도에서 내려가는 시·라(아래덧줄 2개)까지 익혀요!</div>
       </button>
-      <button class="mode-btn" onclick="startQuiz('pitch', 'bass_all')">
+      <button class="mode-btn" data-lock="pitch:4" onclick="tryStartQuiz('pitch', 'bass_all', 4)">
         <div class="mode-title">5단계 · 낮은음자리표 (기본 + 위·아래덧줄)</div>
         <div class="mode-desc">낮은 도·가온 도부터 아래덧줄·위덧줄까지 왼손 악보를 읽어요!</div>
       </button>
-      <button class="mode-btn" onclick="startQuiz('pitch', 'pitch_mix')">
+      <button class="mode-btn" data-lock="pitch:5" onclick="tryStartQuiz('pitch', 'pitch_mix', 5)">
         <div class="mode-title">⭐ 6단계 · 계이름 종합 왕중왕전</div>
         <div class="mode-desc">높은음자리표 + 낮은음자리표 + 모든 덧줄이 다 나와요!</div>
       </button>
@@ -379,19 +506,19 @@
 
     <!-- 3. 기호 · 조표 -->
     <div id="symbol-modes" class="mode-grid hidden">
-      <button class="mode-btn" onclick="startQuiz('symbol', 'art')">
+      <button class="mode-btn" data-lock="symbol:0" onclick="tryStartQuiz('symbol', 'art', 0)">
         <div class="mode-title">1단계 · 연주·반복 기호 (테누토·악센트·도돌이표)</div>
         <div class="mode-desc">테누토, 악센트, 스타카토, 페르마타, 도돌이표, D.C., D.S.를 익혀요!</div>
       </button>
-      <button class="mode-btn" onclick="startQuiz('symbol', 'dyn')">
+      <button class="mode-btn" data-lock="symbol:1" onclick="tryStartQuiz('symbol', 'dyn', 1)">
         <div class="mode-title">2단계 · 셈여림·악상기호 (p·f·크레센도)</div>
         <div class="mode-desc">pp부터 ff까지 세기 기호와 점점 세게·점점 여리게를 맞혀요!</div>
       </button>
-      <button class="mode-btn" onclick="startQuiz('symbol', 'key')">
+      <button class="mode-btn" data-lock="symbol:2" onclick="tryStartQuiz('symbol', 'key', 2)">
         <div class="mode-title">3단계 · 조성(♯·♭) 장조 맞히기</div>
         <div class="mode-desc">조표 개수(♯·♭)를 보고 무슨 장조인지 맞춰요! (고학년 추천)</div>
       </button>
-      <button class="mode-btn" onclick="startQuiz('symbol', 'sym_mix')">
+      <button class="mode-btn" data-lock="symbol:3" onclick="tryStartQuiz('symbol', 'sym_mix', 3)">
         <div class="mode-title">⭐ 4단계 · 기호·조성 종합 퀴즈</div>
         <div class="mode-desc">연주 기호 + 셈여림 + 조성 문제가 섞여서 나와요!</div>
       </button>
@@ -420,6 +547,9 @@
         <div class="mode-desc">테누토, 악센트, 페르마타, 셈여림 기호의 짝을 찾아요!</div>
       </button>
     </div>
+    <div class="unlock-row">
+      <button class="teacher-unlock-btn" id="teacher-unlock-btn" onclick="toggleTeacherUnlock()">🔓 선생님 전체 잠금 해제</button>
+    </div>
   </div>
 
   <!-- QUIZ SCREEN -->
@@ -430,7 +560,10 @@
       <span class="pill score-pill" id="score-pill">⭐ 0점</span>
     </div>
     <div class="card-stage">
-      <div class="q-prompt" id="q-prompt">문제</div>
+      <div class="mascot-bubble">
+        <div class="mascot-svg" id="quiz-mascot"></div>
+        <div class="q-prompt" id="q-prompt" style="margin-bottom:0; text-align:left;">문제</div>
+      </div>
       <div class="svg-wrap" id="svg-wrap"></div>
       <button class="sound-btn" id="sound-btn" onclick="playCurrentSound()">🔊 소리 들어보기</button>
     </div>
@@ -479,6 +612,11 @@
     </div>
     <p class="sub" style="margin-bottom:6px;">이 기기에서 플레이한 학생별 최고·누적 점수예요!</p>
     <div class="rank-list" id="rank-list"></div>
+    <div class="player-bar" style="margin-top:10px; margin-bottom:6px;">
+      <label for="wrong-student-select">📝 학생별 오답·종합평가</label>
+      <select id="wrong-student-select" class="player-select" onchange="renderWrongReport()"></select>
+    </div>
+    <div class="wrong-box" id="wrong-report"></div>
     <button class="primary-btn" onclick="goHome()">게임 하러 가기 🎵</button>
   </div>
 
@@ -487,6 +625,7 @@
     <div class="trophy" id="trophy-icon">🏆</div>
     <h1 id="result-title">참 잘했어요!</h1>
     <p class="sub" id="result-desc"></p>
+    <div class="wrong-box hidden" id="result-wrongs"></div>
     <button class="primary-btn" id="retry-btn" onclick="retryLast()">한 번 더 하기 🔁</button>
     <button class="secondary-btn" id="result-home-btn" onclick="goHome()">단계 고르기로 가기</button>
   </div>
@@ -537,6 +676,94 @@ function onStudentChange() {
   } else {
     localStorage.setItem('goun_student', sel.value);
   }
+  applyLockUI();
+}
+
+// ========================
+// 1-2. 응원 캐릭터 & 단계 잠금 해제 (80점 이상)
+// ========================
+const CHARS = [
+  { id:'pia', emoji:'🐰', name:'피아', color:'#ffd6e7', ear:'<ellipse cx="22" cy="14" rx="5" ry="12" fill="#ffeaf2" stroke="#5c4740" stroke-width="2"/><ellipse cx="38" cy="14" rx="5" ry="12" fill="#ffeaf2" stroke="#5c4740" stroke-width="2"/>' },
+  { id:'remi', emoji:'🐻', name:'레미', color:'#f5d9b8', ear:'<circle cx="17" cy="18" r="6" fill="#d9a973" stroke="#5c4740" stroke-width="2"/><circle cx="43" cy="18" r="6" fill="#d9a973" stroke="#5c4740" stroke-width="2"/>' },
+  { id:'coco', emoji:'🐱', name:'코코', color:'#fff2c6', ear:'<polygon points="15,24 19,10 27,20" fill="#ffe699" stroke="#5c4740" stroke-width="2"/><polygon points="45,24 41,10 33,20" fill="#ffe699" stroke="#5c4740" stroke-width="2"/>' },
+  { id:'rhythm', emoji:'🐶', name:'리듬', color:'#e0efff', ear:'<ellipse cx="14" cy="30" rx="5" ry="10" fill="#a8c7eb" stroke="#5c4740" stroke-width="2"/><ellipse cx="46" cy="30" rx="5" ry="10" fill="#a8c7eb" stroke="#5c4740" stroke-width="2"/>' }
+];
+let currentCharId = localStorage.getItem('goun_char') || 'pia';
+let teacherUnlockedAll = localStorage.getItem('goun_teacher_unlock') === '1';
+
+function initCharPicks() {
+  const wrap = document.getElementById('char-picks');
+  wrap.innerHTML = '';
+  CHARS.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'char-pick-btn' + (c.id === currentCharId ? ' active' : '');
+    b.textContent = `${c.emoji} ${c.name}`;
+    b.onclick = () => {
+      currentCharId = c.id;
+      localStorage.setItem('goun_char', c.id);
+      initCharPicks();
+    };
+    wrap.appendChild(b);
+  });
+}
+
+function mascotSvg(charId, mood='idle') {
+  const c = CHARS.find(x => x.id === charId) || CHARS[0];
+  const eyes = mood === 'happy'
+    ? '<path d="M21 31 Q24 27 27 31" fill="none" stroke="#3c2f2a" stroke-width="2.4" stroke-linecap="round"/><path d="M33 31 Q36 27 39 31" fill="none" stroke="#3c2f2a" stroke-width="2.4" stroke-linecap="round"/>'
+    : mood === 'cheer'
+    ? '<circle cx="24" cy="31" r="2.5" fill="#3c2f2a"/><circle cx="36" cy="31" r="2.5" fill="#3c2f2a"/><path d="M26 39 Q30 37 34 39" fill="none" stroke="#3c2f2a" stroke-width="2" stroke-linecap="round"/>'
+    : '<circle cx="24" cy="31" r="2.5" fill="#3c2f2a"/><circle cx="36" cy="31" r="2.5" fill="#3c2f2a"/>';
+  const mouth = mood === 'happy'
+    ? '<path d="M26 36 Q30 42 34 36" fill="#ff7aa8" stroke="#3c2f2a" stroke-width="2"/>'
+    : mood === 'cheer' ? ''
+    : '<path d="M27 37 Q30 40 33 37" fill="none" stroke="#3c2f2a" stroke-width="2" stroke-linecap="round"/>';
+  const star = mood === 'happy' ? '<text x="45" y="16" font-size="14">✨</text>' : '';
+  return `<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">${c.ear}<circle cx="30" cy="33" r="17" fill="${c.color}" stroke="#5c4740" stroke-width="2.2"/>${eyes}${mouth}<circle cx="20" cy="35" r="2.5" fill="#ff9eb8" opacity="0.6"/><circle cx="40" cy="35" r="2.5" fill="#ff9eb8" opacity="0.6"/>${star}</svg>`;
+}
+
+function getStudentUnlocks(student) {
+  const all = JSON.parse(localStorage.getItem('goun_unlocks') || '{}');
+  return all[student] || { rhythm: 0, pitch: 0, symbol: 0 };
+}
+function unlockNextStage(student, gameType, stageIdx) {
+  const all = JSON.parse(localStorage.getItem('goun_unlocks') || '{}');
+  if (!all[student]) all[student] = { rhythm: 0, pitch: 0, symbol: 0 };
+  if (stageIdx + 1 > (all[student][gameType] || 0)) {
+    all[student][gameType] = stageIdx + 1;
+    localStorage.setItem('goun_unlocks', JSON.stringify(all));
+  }
+}
+function applyLockUI() {
+  const student = getCurrentStudent();
+  const unlocks = getStudentUnlocks(student);
+  document.querySelectorAll('[data-lock]').forEach(btn => {
+    const [gType, idxStr] = btn.dataset.lock.split(':');
+    const idx = Number(idxStr);
+    const unlocked = teacherUnlockedAll || idx <= (unlocks[gType] || 0);
+    btn.classList.toggle('locked', !unlocked);
+    const titleEl = btn.querySelector('.mode-title');
+    if (titleEl) {
+      const clean = titleEl.textContent.replace(/^🔒\s*/, '');
+      titleEl.textContent = unlocked ? clean : '🔒 ' + clean;
+    }
+  });
+  const tb = document.getElementById('teacher-unlock-btn');
+  if (tb) tb.textContent = teacherUnlockedAll ? '🔒 학생별 잠금 모드로 돌아가기' : '🔓 선생님 전체 잠금 해제';
+}
+function toggleTeacherUnlock() {
+  teacherUnlockedAll = !teacherUnlockedAll;
+  localStorage.setItem('goun_teacher_unlock', teacherUnlockedAll ? '1' : '0');
+  applyLockUI();
+}
+function tryStartQuiz(gameType, mode, stageIdx) {
+  const unlocks = getStudentUnlocks(getCurrentStudent());
+  if (!teacherUnlockedAll && stageIdx > (unlocks[gameType] || 0)) {
+    alert(`이전 단계에서 80점 이상 받으면 ${stageIdx + 1}단계 자물쇠가 풀려요! 🔓`);
+    return;
+  }
+  currentStageIdx = stageIdx;
+  startQuiz(gameType, mode);
 }
 
 function saveStudentScore(name, pts) {
@@ -737,6 +964,7 @@ const KEY_SIGS = [
 let currentTab = 'rhythm';
 let currentGameType = 'rhythm';
 let currentMode = 'kind';
+let currentStageIdx = 0;
 let questions = [];
 let qIndex = 0;
 let score = 0;
@@ -860,7 +1088,25 @@ function startQuiz(gameType, mode) {
     }
   }
 
-  qIndex = 0; score = 0;
+let roundWrongs = [];
+const STAGE_LABELS = {
+  rhythm: ['리듬 1단계(음표·쉼표)','리듬 2단계(이름)','리듬 3단계(박자)','리듬 4단계(종합)'],
+  pitch: ['계이름 1단계(도 자리)','계이름 2단계(높은음 기본)','계이름 3단계(위덧줄)','계이름 4단계(아래덧줄)','계이름 5단계(낮은음)','계이름 6단계(종합)'],
+  symbol: ['기호 1단계(연주·반복)','기호 2단계(셈여림)','기호 3단계(조성 ♯·♭)','기호 4단계(종합)']
+};
+function getStageLabel() {
+  return (STAGE_LABELS[currentGameType] && STAGE_LABELS[currentGameType][currentStageIdx]) || currentGameType;
+}
+function recordWrong(student, stageLabel, itemLabel, hint) {
+  const all = JSON.parse(localStorage.getItem('goun_wrongs') || '{}');
+  if (!all[student]) all[student] = {};
+  if (!all[student][stageLabel]) all[student][stageLabel] = {};
+  if (!all[student][stageLabel][itemLabel]) all[student][stageLabel][itemLabel] = { count: 0, hint };
+  all[student][stageLabel][itemLabel].count += 1;
+  localStorage.setItem('goun_wrongs', JSON.stringify(all));
+}
+
+  qIndex = 0; score = 0; roundWrongs = [];
   showOnly('game-screen');
   renderQuestion();
 }
@@ -870,6 +1116,8 @@ function renderQuestion() {
   const q = questions[qIndex];
   document.getElementById('progress-pill').textContent = `${qIndex + 1} / ${questions.length}`;
   document.getElementById('score-pill').textContent = `⭐ ${score}점`;
+  document.getElementById('quiz-mascot').innerHTML = mascotSvg(currentCharId, 'idle');
+  document.getElementById('quiz-mascot').classList.remove('bounce');
   document.getElementById('q-prompt').textContent = q.prompt;
   document.getElementById('svg-wrap').innerHTML = q.item.svg;
   const sb = document.getElementById('sound-btn');
@@ -911,11 +1159,17 @@ function selectAnswer(btn, opt) {
     btn.classList.add('correct');
     fb.classList.add('fb-ok');
     fb.textContent = `정답! 🎉 ${q.item.name || q.item.cLabel || q.item.solfege}`;
+    document.getElementById('quiz-mascot').innerHTML = mascotSvg(currentCharId, 'happy');
+    document.getElementById('quiz-mascot').classList.add('bounce');
     sfxCorrect();
   } else {
     btn.classList.add('wrong');
     fb.classList.add('fb-no');
     fb.textContent = `아쉬워요! ${q.item.hint}`;
+    document.getElementById('quiz-mascot').innerHTML = mascotSvg(currentCharId, 'cheer');
+    const itemLabel = q.item.name || q.item.cLabel || (q.item.clef ? `${q.item.clef==='treble'?'높은음':'낮은음'} ${q.item.solfege}` : q.correct);
+    roundWrongs.push({ label: itemLabel, hint: q.item.hint });
+    recordWrong(getCurrentStudent(), getStageLabel(), itemLabel, q.item.hint);
     sfxWrong();
   }
   if (currentGameType === 'pitch') setTimeout(() => playCurrentSound(), 180);
@@ -932,10 +1186,26 @@ function nextQuestion() {
 function showQuizResult() {
   const student = getCurrentStudent();
   saveStudentScore(student, score);
+  let unlockMsg = '';
+  if (score >= 80) {
+    unlockNextStage(student, currentGameType, currentStageIdx);
+    applyLockUI();
+    unlockMsg = ' 🔓 다음 단계 잠금이 풀렸어요!';
+  } else {
+    unlockMsg = ' (80점 이상 받으면 다음 단계가 열려요!)';
+  }
   showOnly('result-screen');
   document.getElementById('trophy-icon').textContent = score >= 80 ? '🏆' : score >= 50 ? '🌟' : '🌱';
-  document.getElementById('result-title').textContent = `${student} 최고!`;
-  document.getElementById('result-desc').textContent = `10문제 중 ${score / 10}문제를 맞혀서 ${score}점을 기록했어요!`;
+  document.getElementById('result-title').textContent = `${student} ${score >= 80 ? '클리어!' : '수고했어요!'}`;
+  document.getElementById('result-desc').textContent = `10문제 중 ${score / 10}문제를 맞혀서 ${score}점을 기록했어요!${unlockMsg}`;
+  const rw = document.getElementById('result-wrongs');
+  if (roundWrongs.length > 0) {
+    rw.classList.remove('hidden');
+    rw.innerHTML = `<h3>📝 이번 판 틀린 문제 (${roundWrongs.length}개)</h3>` +
+      roundWrongs.map(w => `<div class="wrong-item">• <strong>${w.label}</strong>: ${w.hint}</div>`).join('');
+  } else {
+    rw.classList.add('hidden');
+  }
 }
 
 function retryLast() {
@@ -998,11 +1268,26 @@ function renderMemory() {
 
   const pDiv = document.getElementById('mem-players');
   if (memPlayerCount === 1) {
-    pDiv.innerHTML = `<div class="mem-pbox active-turn">🎹 ${memNames[0]} 혼자 도전 중 (${memMatched}/${totalPairs}쌍)</div>`;
+    const ch = CHARS.find(x => x.id === currentCharId) || CHARS[0];
+    pDiv.innerHTML = `<div class="mem-pbox active-turn">${ch.emoji} ${memNames[0]} 혼자 도전 중 (${memMatched}/${totalPairs}쌍)</div>`;
   } else {
+    const c1 = CHARS.find(x => x.id === currentCharId) || CHARS[0];
+    const c2 = CHARS.find(x => x.id !== currentCharId) || CHARS[1];
+    const diff = memScores[0] - memScores[1];
+    const p1Pct = Math.max(12, Math.min(88, 50 + diff * 10));
+    const p2Pct = 100 - p1Pct;
     pDiv.innerHTML = `
-      <div class="mem-pbox ${memTurn===0?'active-turn':''}">1P ${memNames[0]}: ${memScores[0]}쌍</div>
-      <div class="mem-pbox ${memTurn===1?'active-turn':''}">2P ${memNames[1]}: ${memScores[1]}쌍</div>
+      <div class="vs-arena" style="width:100%;">
+        <div class="vs-top">
+          <div class="vs-fighter ${memTurn===0?'active-fighter':''}">${c1.emoji} 1P ${memNames[0]} (${memScores[0]}쌍)</div>
+          <div class="vs-badge">VS</div>
+          <div class="vs-fighter ${memTurn===1?'active-fighter':''}">(${memScores[1]}쌍) ${memNames[1]} 2P ${c2.emoji}</div>
+        </div>
+        <div class="vs-gauge-track">
+          <div class="vs-bar-p1" style="width:${p1Pct}%;"></div>
+          <div class="vs-bar-p2" style="width:${p2Pct}%;"></div>
+        </div>
+      </div>
     `;
   }
 
@@ -1241,21 +1526,54 @@ function openRanking() {
   const list = document.getElementById('rank-list');
   if (!entries.length) {
     list.innerHTML = '<div class="rank-row"><span>아직 기록이 없어요! 첫 게임을 시작해 보세요 🎹</span></div>';
+  } else {
+    list.innerHTML = entries.map(([name, info], idx) => {
+      const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}위`;
+      return `<div class="rank-row"><span>${medal} ${name}</span><span>총 ${info.total}점 (최고 ${info.best}점 · ${info.plays}회)</span></div>`;
+    }).join('');
+  }
+  const ws = document.getElementById('wrong-student-select');
+  ws.innerHTML = '';
+  const cur = getCurrentStudent();
+  STUDENTS.forEach(n => {
+    const o = document.createElement('option');
+    o.value = n; o.textContent = n;
+    if (n === cur) o.selected = true;
+    ws.appendChild(o);
+  });
+  renderWrongReport();
+}
+function renderWrongReport() {
+  const name = document.getElementById('wrong-student-select').value;
+  const all = JSON.parse(localStorage.getItem('goun_wrongs') || '{}');
+  const box = document.getElementById('wrong-report');
+  const st = all[name];
+  if (!st || !Object.keys(st).length) {
+    box.innerHTML = `<h3>📝 ${name} 학생 오답·종합평가</h3><div>아직 틀린 기록이 없어요! 👍</div>`;
     return;
   }
-  list.innerHTML = entries.map(([name, info], idx) => {
-    const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}위`;
-    return `<div class="rank-row"><span>${medal} ${name}</span><span>총 ${info.total}점 (최고 ${info.best}점 · ${info.plays}회)</span></div>`;
-  }).join('');
+  let html = `<h3>📝 ${name} 학생 단계별 오답 정리</h3>`;
+  Object.entries(st).forEach(([stage, items]) => {
+    html += `<div style="margin-top:6px; font-weight:800; color:#73563d;">▸ ${stage}</div>`;
+    Object.entries(items).forEach(([item, info]) => {
+      html += `<div class="wrong-item">• <strong>${item}</strong> (${info.count}회 오답): ${info.hint}</div>`;
+    });
+  });
+  box.innerHTML = html;
 }
 function clearRecords() {
-  if (confirm('이 기기에 저장된 모든 학생 점수를 초기화할까요?')) {
+  if (confirm('이 기기에 저장된 모든 학생 점수·오답 기록을 초기화할까요?')) {
     localStorage.removeItem('goun_records');
+    localStorage.removeItem('goun_wrongs');
+    localStorage.removeItem('goun_unlocks');
+    applyLockUI();
     openRanking();
   }
 }
 
 initStudentSelects();
+initCharPicks();
+applyLockUI();
 </script>
 </body>
 </html>
