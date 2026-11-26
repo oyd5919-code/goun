@@ -419,6 +419,7 @@
   .wrong-box h3 { font-size: 13.5px; color: #b83b2b; margin-bottom: 6px; }
   .wrong-item { padding: 4px 0; border-bottom: 1px dashed #eed8d3; line-height: 1.4; }
   .wrong-item:last-child { border-bottom: none; }
+  .wrong-summary { background: #fff1ec; border: 1.5px solid #f3c8bc; border-radius: 12px; padding: 8px 10px; margin-bottom: 8px; line-height: 1.55; }
 
   .hidden { display: none; }
   .trophy { font-size: 58px; margin: 8px 0; }
@@ -1553,7 +1554,23 @@ function renderWrongReport() {
     box.innerHTML = `<h3>📝 ${name} 학생 오답·종합평가</h3><div>아직 틀린 기록이 없어요! 👍</div>`;
     return;
   }
-  let html = `<h3>📝 ${name} 학생 단계별 오답 정리</h3>`;
+  let total = 0;
+  const stageTotals = [], itemTotals = [];
+  Object.entries(st).forEach(([stage, items]) => {
+    let stageSum = 0;
+    Object.entries(items).forEach(([item, info]) => {
+      stageSum += info.count;
+      itemTotals.push({ item, count: info.count });
+    });
+    total += stageSum;
+    stageTotals.push({ stage, sum: stageSum });
+  });
+  const worstStage = stageTotals.slice().sort((a, b) => b.sum - a.sum)[0];
+  const topItems = itemTotals.slice().sort((a, b) => b.count - a.count).slice(0, 3)
+    .map(x => `${x.item}(${x.count}회)`).join(', ');
+  let html = `<h3>📝 ${name} 학생 오답·종합평가</h3>`;
+  html += `<div class="wrong-summary">📊 총 ${total}회 오답 · 가장 많이 틀린 단계: <strong>${worstStage.stage}</strong> (${worstStage.sum}회)<br>👉 다시 복습하면 좋은 것: <strong>${topItems}</strong></div>`;
+  html += `<div style="font-weight:800; color:#73563d;">▸ 단계별 오답 정리</div>`;
   Object.entries(st).forEach(([stage, items]) => {
     html += `<div style="margin-top:6px; font-weight:800; color:#73563d;">▸ ${stage}</div>`;
     Object.entries(items).forEach(([item, info]) => {
