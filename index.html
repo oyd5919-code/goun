@@ -78,45 +78,63 @@
     color: #2d2926;
   }
 
+  .section-label {
+    font-size: 12px;
+    font-weight: 800;
+    color: #9b8878;
+    text-align: left;
+    margin: 4px 2px 6px;
+    letter-spacing: 0.2px;
+  }
   .tab-row {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 5px;
-    margin-bottom: 12px;
-    background: #f8f2ec;
-    padding: 5px;
-    border-radius: 16px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+    background: #f5ebe0;
+    padding: 8px;
+    border-radius: 20px;
+    border: 2px solid #ecd9c6;
   }
   .tab-btn {
-    border: none;
-    background: transparent;
-    padding: 9px 4px;
-    border-radius: 12px;
-    font-size: 13px;
-    font-weight: 800;
-    color: #7c7066;
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s;
-  }
-  .tab-btn.active {
+    border: 2px solid #e6d6c6;
     background: #ffffff;
-    color: #d96b27;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 12px 8px;
+    border-radius: 15px;
+    font-size: 15.5px;
+    font-weight: 900;
+    color: #5d5148;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    transition: transform 0.12s, background 0.15s, color 0.15s, border-color 0.15s, box-shadow 0.15s;
+  }
+  .tab-btn:hover { transform: translateY(-1px); border-color: #f39c6b; }
+  .tab-btn .tab-ico { font-size: 20px; line-height: 1; }
+  .tab-btn.active {
+    background: linear-gradient(135deg, #ff8a4c, #eb6a2b);
+    border-color: #d95a1e;
+    color: #ffffff;
+    box-shadow: 0 5px 14px rgba(235, 106, 43, 0.34);
+    transform: translateY(-1px);
   }
 
-  .mode-grid { display: grid; gap: 9px; }
+  .mode-grid { display: grid; gap: 8px; }
   .mode-btn {
-    border: 2px solid #f0dfd1;
-    background: #fffaf5;
-    border-radius: 16px;
-    padding: 13px 14px;
+    border: 1.5px solid #efe3d7;
+    background: #fffdfb;
+    border-radius: 14px;
+    padding: 11px 13px;
     cursor: pointer;
     text-align: left;
     transition: transform 0.1s, border-color 0.15s, background 0.15s;
   }
-  .mode-btn:hover { transform: translateY(-1px); border-color: #f39c6b; background: #fff3e8; }
-  .mode-title { font-size: 15.5px; font-weight: 800; color: #2d2926; margin-bottom: 2px; }
-  .mode-desc { font-size: 12.5px; color: #776c63; line-height: 1.35; }
+  .mode-btn:hover { transform: translateY(-1px); border-color: #f39c6b; background: #fff6ee; }
+  .mode-title { font-size: 14.5px; font-weight: 800; color: #3a322d; margin-bottom: 2px; }
+  .mode-desc { font-size: 12px; color: #84786e; line-height: 1.35; }
 
   .top-bar {
     display: flex;
@@ -446,12 +464,14 @@
       <div class="char-picks" id="char-picks"></div>
     </div>
 
+    <div class="section-label">🎮 놀이 메뉴 고르기</div>
     <div class="tab-row">
-      <button class="tab-btn active" id="tab-rhythm" onclick="switchTab('rhythm')">🥁 리듬</button>
-      <button class="tab-btn" id="tab-pitch" onclick="switchTab('pitch')">🎼 계이름</button>
-      <button class="tab-btn" id="tab-symbol" onclick="switchTab('symbol')">🎵 기호·조표</button>
-      <button class="tab-btn" id="tab-memory" onclick="switchTab('memory')">🃏 카드·대결</button>
+      <button class="tab-btn active" id="tab-rhythm" onclick="switchTab('rhythm')"><span class="tab-ico">🥁</span><span>리듬 놀이</span></button>
+      <button class="tab-btn" id="tab-pitch" onclick="switchTab('pitch')"><span class="tab-ico">🎼</span><span>계이름 놀이</span></button>
+      <button class="tab-btn" id="tab-symbol" onclick="switchTab('symbol')"><span class="tab-ico">🎵</span><span>기호·조표</span></button>
+      <button class="tab-btn" id="tab-memory" onclick="switchTab('memory')"><span class="tab-ico">🃏</span><span>카드·대결</span></button>
     </div>
+    <div class="section-label">📋 단계 선택</div>
 
     <!-- 1. 리듬 -->
     <div id="rhythm-modes" class="mode-grid">
