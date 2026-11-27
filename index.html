@@ -471,9 +471,17 @@
         <div class="mode-title">⭐ 4단계 · 리듬 종합 왕중왕전</div>
         <div class="mode-desc">음표·쉼표 구별 + 이름 + 박자가 섞여서 나와요!</div>
       </button>
-      <button class="mode-btn" onclick="openTapGame()">
-        <div class="mode-title">🥁 보너스 · 박자 직접 두드리기! (8문제)</div>
-        <div class="mode-desc">메트로놈 소리에 맞춰 톡! 치거나 길게 꾹~ 눌러 보세요!</div>
+      <button class="mode-btn" onclick="openTapGame(1)">
+        <div class="mode-title">🥁 리듬치기 1단계 · 4분·2분음표 기초 (10문제)</div>
+        <div class="mode-desc">톡! 치는 4분음표와 2박 꾹~ 누르는 2분음표를 연습해요!</div>
+      </button>
+      <button class="mode-btn" onclick="openTapGame(2)">
+        <div class="mode-title">🥁 리듬치기 2단계 · 점2분·온음표 길게 누르기 (10문제)</div>
+        <div class="mode-desc">3박(점2분음표)과 4박(온음표)을 끝까지 쭈욱~ 눌러요!</div>
+      </button>
+      <button class="mode-btn" onclick="openTapGame(3)">
+        <div class="mode-title">🥁 리듬치기 3단계 · 8분음표 리듬 종합 (10문제)</div>
+        <div class="mode-desc">따다! 빠른 8분음표까지 섞인 종합 리듬에 도전해요!</div>
       </button>
     </div>
 
@@ -502,6 +510,10 @@
       <button class="mode-btn" data-lock="pitch:5" onclick="tryStartQuiz('pitch', 'pitch_mix', 5)">
         <div class="mode-title">⭐ 6단계 · 계이름 종합 왕중왕전</div>
         <div class="mode-desc">높은음자리표 + 낮은음자리표 + 모든 덧줄이 다 나와요!</div>
+      </button>
+      <button class="mode-btn" onclick="openPianoMicGame()">
+        <div class="mode-title">🎹 보너스 · 실제 피아노 건반 쳐서 맞히기!</div>
+        <div class="mode-desc">마이크를 켜고 악보의 음을 피아노로 직접 띵~ 쳐 보세요!</div>
       </button>
     </div>
 
@@ -589,7 +601,7 @@
   <div id="tap-screen" class="hidden">
     <div class="top-bar">
       <button class="back-btn" onclick="goHome()">← 처음으로</button>
-      <span class="pill">4/4박자 리듬 치기</span>
+      <span class="pill" id="tap-progress-pill">1 / 8 패턴</span>
       <span class="pill score-pill" id="tap-score-pill">콤보 0</span>
     </div>
     <div class="card-stage">
@@ -602,6 +614,23 @@
     </div>
     <button class="tap-pad" id="tap-pad" onpointerdown="onTapDown(event)" onpointerup="onTapUp(event)" onpointercancel="onTapUp(event)">🥁 톡! 치거나 길게 꾹~ 누르기</button>
     <div class="feedback hidden" id="tap-feedback"></div>
+  </div>
+
+  <!-- PIANO MIC SCREEN -->
+  <div id="piano-mic-screen" class="hidden">
+    <div class="top-bar">
+      <button class="back-btn" onclick="goHome()">← 처음으로</button>
+      <span class="pill" id="mic-progress-pill">1 / 8</span>
+      <span class="pill score-pill" id="mic-score-pill">⭐ 0점</span>
+    </div>
+    <div class="card-stage">
+      <div class="q-prompt">악보의 음을 실제 피아노로 쳐 보세요! 🎹</div>
+      <div class="svg-wrap" id="mic-svg"></div>
+      <div id="mic-heard" style="font-size:14px; font-weight:800; color:#5c5148; margin:6px 0;">🎤 마이크 버튼을 눌러 시작하세요!</div>
+      <button class="sound-btn" id="mic-toggle-btn" onclick="togglePianoMic()">🎤 마이크 켜고 듣기 시작</button>
+    </div>
+    <div class="feedback hidden" id="mic-feedback"></div>
+    <button class="secondary-btn" onclick="skipMicQuestion()">이 문제 건너뛰기 →</button>
   </div>
 
   <!-- RANKING SCREEN -->
@@ -1005,11 +1034,12 @@ function playCurrentSound() {
 }
 
 function showOnly(id) {
-  ['home-screen','game-screen','memory-screen','tap-screen','ranking-screen','result-screen']
+  ['home-screen','game-screen','memory-screen','tap-screen','piano-mic-screen','ranking-screen','result-screen']
     .forEach(s => document.getElementById(s).classList.toggle('hidden', s !== id));
 }
 function goHome() {
   if (tapTimer) { clearInterval(tapTimer); tapTimer = null; }
+  stopPianoMic();
   showOnly('home-screen');
 }
 function switchTab(tab) {
@@ -1395,26 +1425,57 @@ function tapPatternSvg(notes) {
   return `<svg width="260" height="145" viewBox="0 0 280 150" xmlns="http://www.w3.org/2000/svg">${lines}${inner}</svg>`;
 }
 
-const TAP_PATTERNS = [
-  { label:'4분음표 × 4 (톡-톡-톡-톡)', notes:[{type:'q',start:0,dur:1},{type:'q',start:1,dur:1},{type:'q',start:2,dur:1},{type:'q',start:3,dur:1}] },
-  { label:'2분음표 × 2 (2박 꾹~ / 2박 꾹~)', notes:[{type:'h',start:0,dur:2},{type:'h',start:2,dur:2}] },
-  { label:'4분 + 4분 + 2분 (톡-톡-2박 꾹~)', notes:[{type:'q',start:0,dur:1},{type:'q',start:1,dur:1},{type:'h',start:2,dur:2}] },
-  { label:'2분 + 4분 + 4분 (2박 꾹~-톡-톡)', notes:[{type:'h',start:0,dur:2},{type:'q',start:2,dur:1},{type:'q',start:3,dur:1}] },
-  { label:'점2분 + 4분 (3박 꾹~~-톡)', notes:[{type:'dh',start:0,dur:3},{type:'q',start:3,dur:1}] },
-  { label:'4분 + 점2분 (톡-3박 꾹~~)', notes:[{type:'q',start:0,dur:1},{type:'dh',start:1,dur:3}] },
-  { label:'온음표 (4박 동안 쭈욱~ 누르기!)', notes:[{type:'w',start:0,dur:4}] },
-  { label:'8분음표 리듬 (톡-따다-톡-톡)', notes:[{type:'q',start:0,dur:1},{type:'e2',start:1,dur:0.5},{type:'q',start:2,dur:1},{type:'q',start:3,dur:1}] }
-];
-let tapIdx = 0, tapCombo = 0, tapTimer = null, tapStartMs = 0, tapExpected = [], tapHits = [];
+const TAP_STAGE_PATTERNS = {
+  1: [
+    { label:'1단계 · 4분음표 × 4 (톡-톡-톡-톡)', notes:[{type:'q',start:0,dur:1},{type:'q',start:1,dur:1},{type:'q',start:2,dur:1},{type:'q',start:3,dur:1}] },
+    { label:'1단계 · 2분음표 × 2 (2박 꾹~ / 2박 꾹~)', notes:[{type:'h',start:0,dur:2},{type:'h',start:2,dur:2}] },
+    { label:'1단계 · 4분 + 4분 + 2분 (톡-톡-2박 꾹~)', notes:[{type:'q',start:0,dur:1},{type:'q',start:1,dur:1},{type:'h',start:2,dur:2}] },
+    { label:'1단계 · 2분 + 4분 + 4분 (2박 꾹~-톡-톡)', notes:[{type:'h',start:0,dur:2},{type:'q',start:2,dur:1},{type:'q',start:3,dur:1}] },
+    { label:'1단계 · 4분 + 2분 + 4분 (톡-2박 꾹~-톡)', notes:[{type:'q',start:0,dur:1},{type:'h',start:1,dur:2},{type:'q',start:3,dur:1}] },
+    { label:'1단계 · 4분음표 × 4 (한 번 더! 톡-톡-톡-톡)', notes:[{type:'q',start:0,dur:1},{type:'q',start:1,dur:1},{type:'q',start:2,dur:1},{type:'q',start:3,dur:1}] },
+    { label:'1단계 · 2분음표 × 2 (한 번 더! 2박 꾹~ / 2박 꾹~)', notes:[{type:'h',start:0,dur:2},{type:'h',start:2,dur:2}] },
+    { label:'1단계 · 4분 + 4분 + 2분 (리듬 체크!)', notes:[{type:'q',start:0,dur:1},{type:'q',start:1,dur:1},{type:'h',start:2,dur:2}] },
+    { label:'1단계 · 2분 + 4분 + 4분 (리듬 체크!)', notes:[{type:'h',start:0,dur:2},{type:'q',start:2,dur:1},{type:'q',start:3,dur:1}] },
+    { label:'1단계 · 4분 + 2분 + 4분 (마지막 문제!)', notes:[{type:'q',start:0,dur:1},{type:'h',start:1,dur:2},{type:'q',start:3,dur:1}] }
+  ],
+  2: [
+    { label:'2단계 · 점2분 + 4분 (3박 꾹~~-톡)', notes:[{type:'dh',start:0,dur:3},{type:'q',start:3,dur:1}] },
+    { label:'2단계 · 4분 + 점2분 (톡-3박 꾹~~)', notes:[{type:'q',start:0,dur:1},{type:'dh',start:1,dur:3}] },
+    { label:'2단계 · 온음표 (4박 동안 쭈욱~ 누르기!)', notes:[{type:'w',start:0,dur:4}] },
+    { label:'2단계 · 2분 + 2분 (2박 꾹~ / 2박 꾹~)', notes:[{type:'h',start:0,dur:2},{type:'h',start:2,dur:2}] },
+    { label:'2단계 · 점2분 + 4분 (한 번 더! 3박 꾹~~-톡)', notes:[{type:'dh',start:0,dur:3},{type:'q',start:3,dur:1}] },
+    { label:'2단계 · 온음표 (4박 흔들리지 않고 쭈욱~!)', notes:[{type:'w',start:0,dur:4}] },
+    { label:'2단계 · 4분 + 점2분 (톡-3박 꾹~~)', notes:[{type:'q',start:0,dur:1},{type:'dh',start:1,dur:3}] },
+    { label:'2단계 · 4분 + 2분 + 4분 (톡-2박 꾹~-톡)', notes:[{type:'q',start:0,dur:1},{type:'h',start:1,dur:2},{type:'q',start:3,dur:1}] },
+    { label:'2단계 · 점2분 + 4분 (리듬 체크!)', notes:[{type:'dh',start:0,dur:3},{type:'q',start:3,dur:1}] },
+    { label:'2단계 · 온음표 (마지막 문제! 4박 쭈욱~)', notes:[{type:'w',start:0,dur:4}] }
+  ],
+  3: [
+    { label:'3단계 · 톡-따다-톡-톡', notes:[{type:'q',start:0,dur:1},{type:'e2',start:1,dur:0.5},{type:'q',start:2,dur:1},{type:'q',start:3,dur:1}] },
+    { label:'3단계 · 따다-톡-따다-톡', notes:[{type:'e2',start:0,dur:0.5},{type:'q',start:1,dur:1},{type:'e2',start:2,dur:0.5},{type:'q',start:3,dur:1}] },
+    { label:'3단계 · 톡-톡-따다-톡', notes:[{type:'q',start:0,dur:1},{type:'q',start:1,dur:1},{type:'e2',start:2,dur:0.5},{type:'q',start:3,dur:1}] },
+    { label:'3단계 · 따다-따다-2박 꾹~', notes:[{type:'e2',start:0,dur:0.5},{type:'e2',start:1,dur:0.5},{type:'h',start:2,dur:2}] },
+    { label:'3단계 · 2박 꾹~-따다-톡', notes:[{type:'h',start:0,dur:2},{type:'e2',start:2,dur:0.5},{type:'q',start:3,dur:1}] },
+    { label:'3단계 · 2박 꾹~-톡-따다', notes:[{type:'h',start:0,dur:2},{type:'q',start:2,dur:1},{type:'e2',start:3,dur:0.5}] },
+    { label:'3단계 · 따다-2박 꾹~-톡', notes:[{type:'e2',start:0,dur:0.5},{type:'h',start:1,dur:2},{type:'q',start:3,dur:1}] },
+    { label:'3단계 · 톡-따다-2박 꾹~', notes:[{type:'q',start:0,dur:1},{type:'e2',start:1,dur:0.5},{type:'h',start:2,dur:2}] },
+    { label:'3단계 · 따다-따다-따다-톡', notes:[{type:'e2',start:0,dur:0.5},{type:'e2',start:1,dur:0.5},{type:'e2',start:2,dur:0.5},{type:'q',start:3,dur:1}] },
+    { label:'3단계 · 톡-따다-따다-톡 (마지막!)', notes:[{type:'q',start:0,dur:1},{type:'e2',start:1,dur:0.5},{type:'e2',start:2,dur:0.5},{type:'q',start:3,dur:1}] }
+  ]
+};
+let tapStage = 1, tapIdx = 0, tapCombo = 0, tapScore = 0, tapTimer = null, tapStartMs = 0, tapExpected = [], tapHits = [];
 let activeHold = null;
 
-function openTapGame() {
-  tapIdx = 0; tapCombo = 0;
+function openTapGame(stage = 1) {
+  currentGameType = 'tap';
+  tapStage = stage;
+  tapIdx = 0; tapCombo = 0; tapScore = 0;
   showOnly('tap-screen');
   renderTapPattern();
 }
 function renderTapPattern() {
-  const p = TAP_PATTERNS[tapIdx % TAP_PATTERNS.length];
+  const list = TAP_STAGE_PATTERNS[tapStage] || TAP_STAGE_PATTERNS[1];
+  const p = list[tapIdx];
   const expected = [];
   p.notes.forEach(n => {
     if (n.type === 'e2') {
@@ -1425,6 +1486,7 @@ function renderTapPattern() {
     }
   });
   tapExpected = expected;
+  document.getElementById('tap-progress-pill').textContent = `${tapStage}단계 · ${tapIdx + 1} / ${list.length} 패턴`;
   document.getElementById('tap-score-pill').textContent = `콤보 ${tapCombo}`;
   document.getElementById('tap-prompt').textContent = p.label;
   document.getElementById('tap-svg').innerHTML = tapPatternSvg(p.notes);
@@ -1503,12 +1565,25 @@ function gradeTapRound() {
   }
   if (ok) {
     tapCombo++;
+    tapScore = (typeof tapScore === 'number' ? tapScore : 0) + 15;
     sfxCorrect();
     saveStudentScore(getCurrentStudent(), 15);
     fb.classList.add('fb-ok');
-    fb.textContent = `완벽한 박자 & 길이! 🎉 (+15점) 다음 패턴으로 넘어가요!`;
     tapIdx++;
-    setTimeout(renderTapPattern, 1300);
+    const list = TAP_STAGE_PATTERNS[tapStage] || TAP_STAGE_PATTERNS[1];
+    if (tapIdx >= list.length) {
+      fb.textContent = `${tapStage}단계 ${list.length}문제 전부 클리어!! 🎉`;
+      setTimeout(() => {
+        showOnly('result-screen');
+        document.getElementById('trophy-icon').textContent = '🥁';
+        document.getElementById('result-title').textContent = `${getCurrentStudent()} 리듬 ${tapStage}단계 마스터!`;
+        document.getElementById('result-desc').textContent = `박자 두드리기 ${tapStage}단계 ${list.length}문제를 전부 성공해 총 ${tapScore}점을 얻었어요!`;
+        document.getElementById('result-wrongs').classList.add('hidden');
+      }, 1100);
+    } else {
+      fb.textContent = `완벽한 박자 & 길이! 🎉 (+15점) 다음 패턴으로 넘어가요!`;
+      setTimeout(renderTapPattern, 1200);
+    }
   } else {
     tapCombo = 0;
     sfxWrong();
@@ -1516,6 +1591,123 @@ function gradeTapRound() {
     fb.textContent = shortMsg || `박자가 조금 어긋났어요! (${tapHits.length}번 침 / 정답 ${tapExpected.length}번) 다시 도전!`;
   }
   document.getElementById('tap-score-pill').textContent = `콤보 ${tapCombo}`;
+}
+
+// ========================
+// 8-2. 실제 피아노 건반 쳐서 맞히기 (마이크 음정 인식)
+// ========================
+let micQuestions = [], micIdx = 0, micScore = 0;
+let micStream = null, micAnalyser = null, micRaf = null, micLocked = false;
+const NOTE_NAMES_KR = ['도','도♯','레','레♯','미','파','파♯','솔','솔♯','라','라♯','시'];
+
+function openPianoMicGame() {
+  currentGameType = 'mic';
+  const pool = [...THREE_C_ITEMS, ...TREBLE_MID];
+  micQuestions = [];
+  for (let i = 0; i < 8; i++) micQuestions.push(pool[Math.floor(Math.random() * pool.length)]);
+  micIdx = 0; micScore = 0; micLocked = false;
+  showOnly('piano-mic-screen');
+  renderMicQuestion();
+}
+function renderMicQuestion() {
+  micLocked = false;
+  const q = micQuestions[micIdx];
+  document.getElementById('mic-progress-pill').textContent = `${micIdx + 1} / ${micQuestions.length}`;
+  document.getElementById('mic-score-pill').textContent = `⭐ ${micScore}점`;
+  document.getElementById('mic-svg').innerHTML = q.svg;
+  document.getElementById('mic-feedback').classList.add('hidden');
+  document.getElementById('mic-heard').textContent = micStream ? '🎤 피아노 건반을 쳐 보세요!' : '🎤 아래 마이크 버튼을 눌러 시작하세요!';
+}
+async function togglePianoMic() {
+  if (micStream) { stopPianoMic(); return; }
+  try {
+    micStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+    const ctx = getCtx();
+    if (ctx.state === 'suspended') await ctx.resume();
+    const src = ctx.createMediaStreamSource(micStream);
+    micAnalyser = ctx.createAnalyser();
+    micAnalyser.fftSize = 2048;
+    src.connect(micAnalyser);
+    document.getElementById('mic-toggle-btn').textContent = '⏹ 마이크 끄기';
+    document.getElementById('mic-heard').textContent = '🎤 듣고 있어요! 피아노 건반을 쳐 보세요!';
+    listenMicLoop();
+  } catch (err) {
+    alert('마이크 권한을 허용해 주셔야 피아노 소리를 들을 수 있어요!');
+  }
+}
+function stopPianoMic() {
+  if (micRaf) { cancelAnimationFrame(micRaf); micRaf = null; }
+  if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
+  const btn = document.getElementById('mic-toggle-btn');
+  if (btn) btn.textContent = '🎤 마이크 켜고 듣기 시작';
+}
+function autoCorrelate(buf, sampleRate) {
+  let rms = 0;
+  for (let i = 0; i < buf.length; i++) rms += buf[i] * buf[i];
+  rms = Math.sqrt(rms / buf.length);
+  if (rms < 0.02) return -1;
+  let r1 = 0, r2 = buf.length - 1, thres = 0.2;
+  for (let i = 0; i < buf.length / 2; i++) if (Math.abs(buf[i]) < thres) { r1 = i; break; }
+  for (let i = 1; i < buf.length / 2; i++) if (Math.abs(buf[buf.length - i]) < thres) { r2 = buf.length - i; break; }
+  const slice = buf.slice(r1, r2);
+  const c = new Array(slice.length).fill(0);
+  for (let i = 0; i < slice.length; i++) for (let j = 0; j < slice.length - i; j++) c[i] += slice[j] * slice[j + i];
+  let d = 0; while (d < c.length - 1 && c[d] > c[d + 1]) d++;
+  let maxval = -1, maxpos = -1;
+  for (let i = d; i < c.length; i++) if (c[i] > maxval) { maxval = c[i]; maxpos = i; }
+  if (maxpos <= 0) return -1;
+  return sampleRate / maxpos;
+}
+function freqToMidi(hz) { return Math.round(12 * (Math.log(hz / 440) / Math.log(2))) + 69; }
+function listenMicLoop() {
+  if (!micStream || !micAnalyser) return;
+  const buf = new Float32Array(micAnalyser.fftSize);
+  micAnalyser.getFloatTimeDomainData(buf);
+  const hz = autoCorrelate(buf, getCtx().sampleRate);
+  if (hz > 60 && hz < 2000 && !micLocked) {
+    const heardMidi = freqToMidi(hz);
+    const targetMidi = freqToMidi(micQuestions[micIdx].hz);
+    const noteKr = NOTE_NAMES_KR[heardMidi % 12];
+    const oct = Math.floor(heardMidi / 12) - 1;
+    document.getElementById('mic-heard').textContent = `🎵 들린 음: ${noteKr} (${oct}옥타브)`;
+    if (heardMidi === targetMidi) {
+      micLocked = true;
+      micScore += 15;
+      sfxCorrect();
+      saveStudentScore(getCurrentStudent(), 15);
+      const fb = document.getElementById('mic-feedback');
+      fb.classList.remove('hidden', 'fb-no'); fb.classList.add('fb-ok');
+      fb.textContent = `딩동댕! 🎉 정확한 ${micQuestions[micIdx].cLabel || micQuestions[micIdx].solfege}예요!`;
+      document.getElementById('mic-score-pill').textContent = `⭐ ${micScore}점`;
+      setTimeout(() => {
+        micIdx++;
+        if (micIdx >= micQuestions.length) {
+          stopPianoMic();
+          showOnly('result-screen');
+          document.getElementById('trophy-icon').textContent = '🎹';
+          document.getElementById('result-title').textContent = `${getCurrentStudent()} 피아노 박사!`;
+          document.getElementById('result-desc').textContent = `실제 피아노 연주 ${micQuestions.length}문제를 마쳐서 ${micScore}점을 얻었어요!`;
+          document.getElementById('result-wrongs').classList.add('hidden');
+        } else {
+          renderMicQuestion();
+        }
+      }, 1200);
+    }
+  }
+  micRaf = requestAnimationFrame(listenMicLoop);
+}
+function skipMicQuestion() {
+  micIdx++;
+  if (micIdx >= micQuestions.length) {
+    stopPianoMic();
+    showOnly('result-screen');
+    document.getElementById('trophy-icon').textContent = '🎹';
+    document.getElementById('result-title').textContent = `${getCurrentStudent()} 수고했어요!`;
+    document.getElementById('result-desc').textContent = `총 ${micScore}점을 기록했어요!`;
+    document.getElementById('result-wrongs').classList.add('hidden');
+  } else {
+    renderMicQuestion();
+  }
 }
 
 // ========================
